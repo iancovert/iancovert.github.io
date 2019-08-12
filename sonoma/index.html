@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Lamas e Vino</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <link href='http://fonts.googleapis.com/css?family=Arizonia' rel='stylesheet' type='text/css'>
+
+  <style>
+      html, body {
+        background-color: #202020;
+        height: 100%;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      * {
+        font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue";
+        color: white;
+      }
+      .light-background {
+        background-color: #303030;;
+      }
+      .huge h2 {
+        font-family: "Arizonia"
+      }
+      .huge h1 {
+        font-size: 100px;
+        font-family: "Arizonia";
+      }
+      .column-centered {
+        float: none;
+        margin: auto;
+      }
+      .spacing {
+        padding-top: 50px;
+        padding-bottom: 50px;
+      }
+      .spacing h1 {
+        padding-bottom: 20px;
+      }
+      .nav-item a {
+        color: white;
+      }
+      .nav-item a:hover {
+        color: #007bff;
+      }
+      .carousel-indicators li {
+        width: 15px;
+        height: 15px;
+        border-radius: 100%;
+        margin: 10px;
+      }
+      .carousel-caption {
+        top: 30%;
+        bottom: auto;
+      }
+      .carousel-item img {
+        height: 100%;
+        max-height: calc(100vh - 40px);
+        width: 100%;
+        object-fit: cover;
+        overflow: hidden;
+      }
+      .people li {
+        list-style-type: none;
+      }
+      .city span {
+        opacity: 0.1;
+      }
+      .city:hover span {
+        color: #007bff;
+        opacity: 1;
+        -webkit-transition: opacity 0.35s, -webkit-transform 0.35s;
+        transition: opacity 0.35s, transform 0.35s;
+        -webkit-transform: scale(0,1);
+        transform: scale(0,1);
+      }
+      .icon img {
+        height: 300px;
+        width: 300px;
+        object-fit: cover;
+        overflow: hidden;
+      }
+      .icon img:hover {
+        opacity: 0.5;
+      }
+      .icon p {
+        font-size: 16px;
+        padding-top: 20px;
+      }
+  </style>
+</head>
+<body>
+
+<ul class="nav justify-content-center">
+  <li class="nav-item">
+    <a class="nav-link active" href="#Welcome">Welcome</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#People">People</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#Activities">Activities</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#Details">Details</a>
+  </li>
+</ul>
+
+<div id="Welcome" class="carousel slide carousel-fade" data-ride="carousel" data-interval="5000">
+    <ol class="carousel-indicators">
+      <li data-target="#Welcome" data-slide-to="0" class="active blah"></li>
+      <li data-target="#Welcome" data-slide-to="1"></li>
+      <li data-target="#Welcome" data-slide-to="2"></li>
+    </ol>
+
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <div class="container-fluid"><img src="images/llama.jpg" class="d-block"></div>
+        <div class="carousel-caption d-none d-md-block huge">
+          <h1>Lamas e Vino</h1>
+          <h2>September 6-9 2019</h2>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="container-fluid"><img src="images/pool.jpg" class="d-block"></div>
+        <div class="carousel-caption d-none d-md-block huge">
+          <h1>Lamas e Vino</h1>
+          <h2>September 6-9 2019</h2>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="container-fluid"><img src="images/wine.jpg" class="d-block" style="object-position: center bottom"></div>
+        <div class="carousel-caption d-none d-md-block huge">
+          <h1>Lamas e Vino</h1>
+          <h2>September 6-9 2019</h2>
+        </div>
+      </div>
+    </div>
+
+    <a class="carousel-control-prev" href="#Welcome" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#Welcome" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+</div>
+
+<div class="container spacing">
+    <h1 class="text-center">People</h1>
+    <div class="container-fluid d-flex" id="People">
+        <ul class="mx-auto justify-content-center people">
+            <li class="city">Ian <span>(SEA)</span></li>
+            <li class="city">Jake <span>(SEA)</span></li>
+            <li class="city">Rina <span>(SEA)</span></li>
+            <li class="city">Jenny <span>(SEA)</span></li>
+            <li class="city">Nicasia <span>(SEA)</span></li>
+            <li class="city">Geoffrey <span>(SF)</span></li>
+            <li class="city">Mayank <span>(NYC)</span></li>
+            <li class="city">Harsha <span>(NYC)</span></li>
+            <li class="city">Sahir <span>(NYC)</span></li>
+            <li class="city">Eunice <span>(NYC)</span></li>
+            <li class="city">Josh <span>(NYC)</span></li>
+            <li class="city">Rhea <span>(LA)</span></li>
+            <li class="city">Kanika <span>(SF)</span></li>
+            <li class="city">Laney <span>(SF)</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="container-fluid spacing light-background" id="Activities">
+    <div class="row justify-content-center">
+        <h1 class="text-center">Activities</h1>
+    </div>
+    <div class="row justify-content-center spacing">
+        <div class="col-md-4 text-center icon">
+            <img src="images/swimming.jpg" class="rounded-circle img-fluid">
+            <p>Swimming</p>
+        </div>
+        <div class="col-md-4 text-center icon">
+            <img src="images/winery.png" class="rounded-circle img-fluid">
+            <p>Wine Tasting</p>
+        </div>
+        <div class="col-md-4 text-center icon">
+            <img src="images/pingpong.jpg" class="rounded-circle img-fluid">
+            <p>Ping Pong</p>
+        </div>
+    </div>
+    <div class="row justify-content-center spacing">
+        <div class="col-md-4 text-center icon">
+            <img src="images/drink.gif" class="rounded-circle img-fluid">
+            <p>Cool Drinks</p>
+        </div>
+        <div class="col-md-4 text-center icon">
+            <img src="images/cooking.jpg" class="rounded-circle img-fluid">
+            <p>Cooking</p>
+        </div>
+        <div class="col-md-4 text-center icon">
+            <img src="images/bocce.jpg" class="rounded-circle img-fluid">
+            <p>Bocce Ball</p>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid spacing" id="Details">
+    <div class="container-fluid text-center">
+            <h1>Details</h1>
+            <p>The address is 4570 Grange Road, Santa Rosa. Planning details are <a href="https://docs.google.com/document/d/1Pf5ORWO3GORBD1el_MfQmBahH_Zb_rTKf6CkSQESigw/edit?usp=sharing">here</a>.</p>
+            <p>Pack a swimming suit, sunglasses, and ambition in the kitchen.</p>
+    </div>
+</div>
+
+</body>
+</html>
