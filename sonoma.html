@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:300&display=swap" rel="stylesheet">
   <link href='https://fonts.googleapis.com/css?family=Arizonia' rel='stylesheet' type='text/css'>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
@@ -37,26 +38,18 @@
   </script>
   <style>
       html, body {
-        background-color: #202020;
         height: 100%;
+        width: 100%;
       }
       * {
-        font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue";
+        font-family: "Montserrat";
         color: white;
       }
       .light-background {
         background-color: #303030;;
       }
-      .huge h2 {
-        font-family: "Arizonia"
-      }
-      .huge h1 {
-        font-size: 100px;
-        font-family: "Arizonia";
-      }
-      .column-centered {
-        float: none;
-        margin: auto;
+      .dark-background {
+        background-color: #202020;
       }
       .spacing {
         padding-top: 50px;
@@ -65,11 +58,21 @@
       .spacing h1 {
         padding-bottom: 20px;
       }
+
+      /*Nav*/
       .nav-item a {
         color: white;
       }
       .nav-item a:hover {
         color: #007bff;
+      }
+
+      /*Carousel*/
+      .huge * {
+        font-family: "Arizonia"
+      }
+      .huge h1 {
+        font-size: 100px;
       }
       .carousel-indicators li {
         width: 15px;
@@ -83,11 +86,13 @@
       }
       .carousel-item img {
         height: 100%;
-        max-height: calc(100vh - 40px);
+        max-height: 100vh;
         width: 100%;
         object-fit: cover;
         overflow: hidden;
       }
+
+      /*People*/
       .people li {
         list-style-type: none;
         font-size: 18px;
@@ -103,6 +108,8 @@
         -webkit-transform: scale(0,1);
         transform: scale(0,1);
       }
+
+      /*Activities*/
       .icon img {
         height: 300px;
         width: 300px;
@@ -120,7 +127,7 @@
 </head>
 <body>
 
-<ul class="nav justify-content-center">
+<ul class="nav justify-content-center fixed-top dark-background">
   <li class="nav-item">
     <a class="nav-link active" href="#Welcome">Welcome</a>
   </li>
@@ -135,7 +142,7 @@
   </li>
 </ul>
 
-<div id="Welcome" class="carousel slide carousel-fade" data-ride="carousel" data-interval="5000">
+<div class="carousel slide carousel-fade" data-ride="carousel" data-interval="5000" id="Welcome">
     <ol class="carousel-indicators">
       <li data-target="#Welcome" data-slide-to="0" class="active blah"></li>
       <li data-target="#Welcome" data-slide-to="1"></li>
@@ -144,21 +151,21 @@
 
     <div class="carousel-inner">
       <div class="carousel-item active">
-        <div class="container-fluid"><img src="images/llama.jpg" class="d-block" style="background: url(images/llama_lowres.jpg) no-repeat"></div>
+        <img src="images/llama.jpg" class="d-block">
         <div class="carousel-caption d-none d-md-block huge">
           <h1>Lamas e Vino</h1>
           <h2>September 6-9 2019</h2>
         </div>
       </div>
       <div class="carousel-item">
-        <div class="container-fluid"><img src="images/pool.jpg" class="d-block"></div>
+        <img src="images/pool.jpg" class="d-block">
         <div class="carousel-caption d-none d-md-block huge">
           <h1>Lamas e Vino</h1>
           <h2>September 6-9 2019</h2>
         </div>
       </div>
       <div class="carousel-item">
-        <div class="container-fluid"><img src="images/wine.jpg" class="d-block" style="object-position: center bottom"></div>
+        <img src="images/wine.jpg" class="d-block" style="object-position: center bottom">
         <div class="carousel-caption d-none d-md-block huge">
           <h1>Lamas e Vino</h1>
           <h2>September 6-9 2019</h2>
@@ -176,7 +183,7 @@
     </a>
 </div>
 
-<div class="container spacing" id="People">
+<div class="container-fluid spacing dark-background" id="People">
     <h1 class="text-center">People</h1>
     <div class="container-fluid d-flex">
         <ul class="mx-auto justify-content-center people">
@@ -212,18 +219,18 @@
             <p>Wine Tasting</p>
         </div>
         <div class="col-md-4 text-center icon">
-            <img src="images/pingpong.jpg" class="rounded-circle img-fluid">
-            <p>Ping Pong</p>
+            <img src="images/cooking.jpg" class="rounded-circle img-fluid">
+            <p>Cooking</p>
         </div>
     </div>
     <div class="row justify-content-center spacing">
         <div class="col-md-4 text-center icon">
-            <img src="images/drink.gif" class="rounded-circle img-fluid">
-            <p>Cool Drinks</p>
+            <img src="images/bike.jpg" class="rounded-circle img-fluid">
+            <p>Biking</p>
         </div>
         <div class="col-md-4 text-center icon">
-            <img src="images/cooking.jpg" class="rounded-circle img-fluid">
-            <p>Cooking</p>
+            <img src="images/pingpong.jpg" class="rounded-circle img-fluid">
+            <p>Ping Pong</p>
         </div>
         <div class="col-md-4 text-center icon">
             <img src="images/bocce.jpg" class="rounded-circle img-fluid">
@@ -232,7 +239,7 @@
     </div>
 </div>
 
-<div class="container-fluid spacing" id="Details">
+<div class="container-fluid spacing dark-background" id="Details">
     <div class="container-fluid text-center">
             <h1>Details</h1>
             <p>The address is 4570 Grange Road, Santa Rosa. Planning details are <a href="https://docs.google.com/document/d/1Pf5ORWO3GORBD1el_MfQmBahH_Zb_rTKf6CkSQESigw/edit?usp=sharing">here</a>.</p>
