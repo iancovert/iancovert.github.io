@@ -1,1 +1,92 @@
-Page currently under construction
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-89623822-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-89623822-2');
+  </script>
+  <title>Ian Covert</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:300&display=swap" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function(){
+      $("a").on('click', function(event){
+        if (this.hash !== "") {
+          event.preventDefault();
+          var hash = this.hash;
+          $('html, body').animate({
+            scrollTop: $(hash).offset().top
+          }, 800, function(){
+            window.location.hash = hash;
+          });
+        }
+      });
+    });
+  </script>
+  <style>
+    body {
+      font-family: "Montserrat";
+    }
+    .top-spacing {
+      padding-top: 25px;
+    }
+    a {
+      color: #4b2e83;
+    }
+    a:hover {
+      color: #85754d;
+      text-decoration: none;
+    }
+    #Headshot {
+      height: 250px;
+      border-radius: 7px;
+    }
+    #Icons a {
+      display: inline-block;
+      margin-right: 20px;
+      margin-left: 20px;
+    }
+    #Description {
+      max-width: 600px;
+      padding-right: 15px;
+      padding-left: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="row top-spacing">
+      <img src="images/headshot.jpg" class="mx-auto" id="Headshot">
+    </div>
+    <div class="row top-spacing">
+      <a href="index.html" class="mx-auto"><h1 class="display-4">Ian C. Covert</h1></a>
+    </div>
+
+    <div class="row top-spacing text-center" id="Icons">
+      <div class="mx-auto">
+        <a href="mailto:iancovert@gmail.com"><i class="fa fa-paper-plane fa-2x"></i></a>
+        <a href="https://github.com/icc2115"><i class="fa fa-github fa-2x"></i></a>
+        <a href="https://www.linkedin.com/in/ian-covert"><i class="fa fa-linkedin fa-2x"></i></a>
+      </div>
+    </div>
+
+    <div class="row top-spacing">
+      <div class="mx-auto" id="Description">
+        <p>I'm a PhD student at the Paul G. Allen School, University of Washington. I work with <a href="https://suinlee.cs.washington.edu/su-in-lee">Su-In Lee</a>, and with <a href="https://alleninstitute.org/what-we-do/brain-science/about/team/staff-profiles/uygar-sumbul/">Uygar S&uuml;mb&uuml;l</a> from the Allen Institute for Brain Sciences.</p>
+        <!-- <a href="info.html">More information.</a> -->
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
