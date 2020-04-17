@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-89623822-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-89623822-2');
+  </script>
+  <title>Understanding ML models with SHAP and SAGE</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js" integrity="sha384-/y1Nn9+QQAipbNQWU65krzJralCnuOasHncUFXGkdwntGeSvQicrYkiUBwsgUqc1" crossorigin="anonymous"></script>
+  <style>
+    body {
+      font-family: "Georgia";
+    }
+    .navbar {
+      padding-top: 26px;
+      padding-bottom: 24px;
+      padding-left: 5%;
+      padding-right: 5%;
+    }
+    .navbar .nav-link {
+      font-size: 1.25rem;
+    }
+    .navbar a {
+      color: inherit;
+    }
+    .header-separator {
+      margin-top: 0px;
+    }
+    .avatar {
+      float: left;
+      height: 48px;
+      width: 48px;
+      margin-right: 30px;
+      margin-top: -8px;
+    }
+    a:hover {
+      text-decoration: none;
+    }
+    .meta span {
+      margin-right: 20px;
+    }
+    .meta a {
+      text-decoration: none;
+      color: inherit;
+    }
+    .content {
+      margin-bottom: 100px;
+    }
+    .content h2 {
+      margin-top: 32px;
+      margin-bottom: 16px;
+    }
+    footer {
+      padding-top: 15px;
+      padding-bottom: 15px;
+      background-color: #eee;
+    }
+    footer .footer-copyright a {
+      text-decoration: none;
+      color: inherit;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+        <img src="/images/headshot.jpg" class="d-inline-block avatar">
+        Ian Covert
+      </a>
+
+      <!-- TODO confusing behavior when page is too narrow -->
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/blog">Blog</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <hr class="header-separator">
+
+  <!-- Content -->
+  <div class="container content">
+    <div class="row justify-content-md-center">
+      <div class="col-lg-8">
+        <h1>Understanding machine learning models with SHAP and SAGE</h1>
+
+        <hr>
+        <div class="meta">
+          <span class="author">By <a href="">Ian Covert</a></span>
+          <span class="date">April 20, 2020</span>
+        </div>
+        <hr>
+
+        <p>In this post I'll explain <a href="https://arxiv.org/abs/1705.07874">SHAP</a> [1] and <a href="https://arxiv.org/abs/2004.00668">SAGE</a> [2], two game-theoretic methods for understanding machine learning models. Both are valuable tools for understanding the logic behind model predictions, and in some cases they can provide insight into real patterns in the world (more on that later).</p>
+
+        <p>SHAP is a well-known tool for explaining individual model predictions, which is the goal of <em>local</em> interpretability. SAGE is recently proposed method for explaining the model's behavior across the entire dataset, which is the goal of <em>global</em> interpretability. In this post we'll describe the math behind both methods, and then see how they're related.</p>
+
+        <h2>Introduction</h2>
+
+        <p>Machine learning models can be complicated, particularly expressive model types like decision forests and neural networks. In response to this problem, the field of <em>model interpretability</em> studies various ways in which we may try to understand our models. No interpretability tool provides a perfect understanding of a model or a solution for all our needs, so we require different tools to understand our models in different ways. SHAP and SAGE are two such tools, and each answers a specific type of question:</p>
+
+        <ul>
+          <li>SHAP answers the question <em>how much does each feature contribute to this individual prediction?</em></li>
+          <li>SAGE answers the question <em>how much does the model depend on each feature overall?</em></li>
+        </ul>
+
+        <p>From these questions, it's clear that SHAP is a method for explaining individual predictions (local interpretability), whereas SAGE is a method for explaining the model's behavior across the whole dataset (global interpretability). Figure 1 shows how each method is used.</p>
+
+        <figure class="figure">
+          <img src="images/shap_vs_sage.png" class="figure-img img-fluid">
+          <figcaption class="figure-caption">Figure 1: SHAP explains how each feature contributes to an individual prediction, while SAGE explains how each feature contributes to the model's overall performance.</figcaption>
+        </figure>
+
+        <p>Both questions can be answered by a number of methods, so what makes SHAP/SAGE appealing is that they answer their respective questions in a mathematically principled fashion. Their desirable properties derive mainly from the fact that they're based on the Shapley value from cooperative game theory, but this aspect of the methods is complicated and not accessible to many users. This post focuses on explaining the mathematical foundations so that users may have a better intuition for how the methods work, and so that researchers can understand how to build off of them.</p>
+
+        <p>We'll start by reviewing the Shapley value, a concept from game theory that's essential for understanding SHAP and SAGE. Then we'll explain how SHAP and SAGE apply Shapley values to model understanding, and finally we'll see how the two are connected.</p>
+
+        <p>Throughout the post, it may be helpful to refer back here for a summary of the notation we introduce.</p>
+
+        <p><strong>Summary of notation:</strong></p>
+
+        <!-- <ul>
+          <li><script type="math/tex">w</script>: the company's profitability function.</li>
+          <li><script type="math/tex">v_x</script>: the human expert's prediction given <script type="math/tex">x^S</script>. </li>
+          <li><script type="math/tex">v_{f, x}</script>: the model <script type="math/tex">f</script>'s prediction given <script type="math/tex">x^S</script> (for SHAP values).</li>
+          <li><script type="math/tex">v</script>: the human expert's prediction performance given the features <script type="math/tex">X^S</script>.</li>
+          <li><script type="math/tex">f_S</script>: a restricted model that makes predictions given <script type="math/tex">x^S</script>. (Note: for a given <script type="math/tex">f, x</script> we have <script type="math/tex">f_S(x^S) = v_{f, x}(S)</script>.)</li>
+          <li><script type="math/tex">v_f</script>: the model <script type="math/tex">f</script>'s performance (negative loss) given the features <script type="math/tex">X^S</script> (for SAGE values).</li>
+          <li><script type="math/tex">v_{f, x, y}</script>: the negative loss of <script type="math/tex">f</script>'s prediction given <script type="math/tex">x^S</script> and label <script type="math/tex">y</script> (for loss SHAP values).</li>
+        </ul> -->
+        <ul>
+          <li><script type="math/tex">w(S)</script>: the company's profitability function given the employee subset <script type="math/tex">S</script>.</li>
+          <!-- <li><script type="math/tex">X, Y</script>: random variables representing the input and output of a machine learning model.</li>
+          <li><script type="math/tex">x, y</script>: values for the input and output variables.</li>
+          <li><script type="math/tex">x^S</script>: a subset of the features <script type="math/tex">\{x^i \; | \; i \in S\}</script>:</li> -->
+          <li><script type="math/tex">v_x(S)</script>: the human expert's prediction given the features <script type="math/tex">x^S</script>. </li>
+          <li><script type="math/tex">v_{f, x}(S)</script>: the model <script type="math/tex">f</script>'s prediction given the features <script type="math/tex">x^S</script> (for SHAP values).</li>
+          <li><script type="math/tex">v(S)</script>: the human expert's prediction performance given the features <script type="math/tex">X^S</script>.</li>
+          <li><script type="math/tex">f_S(x^S)</script>: a restricted model's prediction given <script type="math/tex">x^S</script>. </li>
+          <!-- (Note that for a given <script type="math/tex">f, x</script> we have <script type="math/tex">f_S(x^S) = v_{f, x}(S)</script>.)</li> -->
+          <li><script type="math/tex">v_f(S)</script>: the model <script type="math/tex">f</script>'s performance (negative loss) given the features <script type="math/tex">X^S</script> (for SAGE values).</li>
+          <li><script type="math/tex">v_{f, x, y}(S)</script>: the negative loss of <script type="math/tex">f</script>'s prediction given <script type="math/tex">x^S</script> and label <script type="math/tex">y</script> (for loss SHAP values).</li>
+        </ul>
+
+        <h2>Shapley values</h2>
+
+        <p>The concept of Shapley values was developed by Lloyd Shapley in a 1953 paper [3] to assign credit to players in a cooperative game. The paper was written in the field of game theory, so Shapley values actually have nothing to do with machine learning. Nonetheless, we'll start by reviewing Shapley values because SHAP and SAGE are special applications of the Shapley value concept.</p>
+
+        <p>Let's illustrate the idea behind Shapley values using a scenario with no machine learning involved.</p>
+
+        <p>Imagine a company with <script type="math/tex">d</script> employees, which are represented by the set <script type="math/tex">D = \{1, 2, \ldots, d\}</script>, and with a management team that is both well-meaning and mathematically inclined. The company makes $1,000,000 a year in profits when all the employees in <script type="math/tex">D</script> do their job, and management wants to distribute the profits through bonuses (Figure 2). But they want to do so in a fair way, by rewarding people in accordance with their contribution to the company's profits.</p>
+
+        <figure class="figure">
+          <img src="images/company.png" class="figure-img img-fluid">
+          <figcaption class="figure-caption">Figure 2: Imaginary company with profits to distribute as bonuses.</figcaption>
+        </figure>
+
+        <p>Management at this company is very insightful, so they have a powerful tool for quantifying each employee's contribution: they know exactly how profitable the company would have been with any subset <script type="math/tex">S \subseteq D</script> of the employees doing their job. (My friends with normal jobs love to point out that no real company has this information, but bear with me.) As a couple examples:</p>
+
+        <ul>
+          <li>With all their employees working (<script type="math/tex">S = D</script>) they make $1,000,000.</li>
+          <li>If everyone stayed but they lost their CEO (<script type="math/tex">S = \{2, 3, \ldots, d\}</script>), they would make just half as much money, $500,000.</li>
+          <li>If they kept everyone except for a couple of new hires (<script type="math/tex">S = \{1, 2, \ldots, d - 2\}</script>), they would make almost as much profit, $950,000.</li>
+          <li>If no one worked there (<script type="math/tex">S = \varnothing</script>) they would make precisely zero dollars.</li>
+        </ul>
+
+        <p>These were just a couple examples, but the management team knows how profitable the company would have been for all <script type="math/tex">2^d</script> subsets of employees. Management summarizes their knowledge with a profitability function</p>
+
+        <script type="math/tex mode=display">w: \mathcal{P}(D) \mapsto \mathbb{R}</script>
+
+        <p>where <script type="math/tex">\mathcal{P}(D)</script> represents the power set of <script type="math/tex">D</script> (i.e., all subsets of <script type="math/tex">D</script>). For any subset of employees <script type="math/tex">S \subseteq D</script>, the quantity <script type="math/tex">w(S)</script> is the amount of profit the company makes with the employees in <script type="math/tex">S</script> doing their job. Intuitively, <script type="math/tex">w</script> shows that the company is more profitable when more employees are doing their job, but especially when the more important employees are included in <script type="math/tex">S</script>.</p>
+
+        <p>Armed with the knowledge represented by <script type="math/tex">w</script>, the management team holds a meeting to discuss giving bonuses <script type="math/tex">\phi_1(w), \phi_2(w), \ldots, \phi_d(w)</script> to each employee <script type="math/tex">1, 2, \ldots, d</script>. (Note that the bonuses <script type="math/tex">\phi_i(w)</script> depend on the profitability function <script type="math/tex">w</script>, because if <script type="math/tex">w</script> were different then the bonuses should also be different.) Management realizes that they must first consider what it means to allocate bonuses fairly, and after a lengthy discussion they come up with the following goals:</p>
+
+        <ol>
+          <li>(Efficiency) The bonuses should add up to the difference between the profitability with all employees and the profitability with no employees, i.e., <script type="math/tex">\sum_{i \in D} \phi_i(w) = w(D) - w(\varnothing)</script>.</li>
+          <li>(Symmetry) If two employees <script type="math/tex">i, j</script> are interchangeable, so that their addition always yields the same result, with <script type="math/tex">w(S \cup \{i\}) = w(S \cup \{j\})</script> for all <script type="math/tex">S</script>, then their bonuses should be identical, i.e., <script type="math/tex">\phi_i(w) = \phi_j(w)</script>.</li>
+          <li>(Dummy) If employee <script type="math/tex">i</script> contributes nothing, so that their addition yields no change in profitability, with <script type="math/tex">w(S \cup \{i\}) = w(S)</script> for all <script type="math/tex">S</script>, then they should receive no bonus, i.e., <script type="math/tex">\phi_i(w) = 0</script>.</li>
+          <li>(Linearity) Consider that the company's total profitability function <script type="math/tex">w</script> is equal to the linear combination of separate profitability functions <script type="math/tex">w_1, w_2, \ldots, w_k</script> for each of the company's <script type="math/tex">k</script> businesses, i.e., <script type="math/tex">w = c_1w_1 + c_2w_2 \ldots + c_kw_k</script>. Then the bonus for each employee determined on the company level <script type="math/tex">\phi_i(w)</script> should equal the linear combination of the employee's bonuses determined on the level of individual businesses <script type="math/tex">\phi_i(w_j)</script>, i.e., <script type="math/tex">\phi_i(w) = c_1 \phi_i(w_1) + c_2 \phi_i(w_2) \ldots + c_k \phi_i(w_k)</script>.</li>
+        </ol>
+
+        <p>These properties all seem reasonable, so the management team wants the bonuses <script type="math/tex">\phi_i(w)</script> to satisfy properties 1-4. But they aren't sure whether it's possible, or even if it is, whether there's a unique way to do it.</p>
+
+        <p>It turns out that there is a way, and the fair bonus allocation to each employee <script type="math/tex">i \in D</script> is given by the following formula:</p>
+
+        <script type="math/tex mode=display">\phi_i(w) = \frac{1}{d} \sum_{S \subseteq D \setminus\{i\}} \binom{d - 1}{|S|}^{-1} \big[w(S \cup \{i\}) - w(S)\big]</script>
+
+        <p>In case that formula looks complicated, to calculate the bonus for employee <script type="math/tex">i</script> we're basically considering how much profitability increases when adding <script type="math/tex">i</script> to a subset <script type="math/tex">S</script>, which is represented by</p>
+
+        <script type="math/tex mode=display">w(S \cup \{i\}) - w(S)</script>
+
+        <p>and then taking a weighted average of this quantity across all possible subsets <script type="math/tex">S</script> that don't include <script type="math/tex">i</script> already (<script type="math/tex">S \subseteq D \setminus \{i\}</script>). The weighting in the weighted average is complex, but this exact weighting scheme yields bonuses that satisfy properties 1-4. (If you're really interested in understanding the weighting scheme, it comes from enumerating all possible orderings of the <script type="math/tex">d</script> employees, and then averaging the profitability bump from adding employee <script type="math/tex">i</script> across all those permutations.)</p>
+
+        <p>You may be wondering where this formula comes from and how we know that it satisfies properties 1-4. The formula was the subject of Lloyd Shapley's famous paper from 1953 [1]. He showed that for any profitability function <script type="math/tex">w</script> (<em>cooperative game</em> in game theory), the values <script type="math/tex">\phi_i(w)</script> (the Shapley values of <script type="math/tex">w</script>) provide the unique way of assigning scores to each employee (<em>player</em> in game theory) that satisfy properties 1-4. He actually used a different set of properties to derive this formula, but subsequent work showed that certain other sets of properties yield the same unique solution.</p>
+
+        <p>The formula for <script type="math/tex">\phi_i(w)</script> given above is the Shapley value—it's a function of a set function <script type="math/tex">w</script>, and it provides a summary of the contribution of each player <script type="math/tex">i \in D</script> to the value <script type="math/tex">w(D)</script>. Thanks to Lloyd Shapley, the management team can allocate bonuses using the Shapley value and know that they've been fair to their employees (Figure 3).</p>
+
+        <figure class="figure">
+          <img src="images/bonuses.png" class="figure-img img-fluid">
+          <figcaption class="figure-caption">Figure 3: Fair bonuses can be allocated using the Shapley values <script type="math/tex">\phi_i(w)</script> of the company's profitability function <script type="math/tex">w</script>.</figcaption>
+        </figure>
+
+        <p>Hopefully this example gave you some intuition for Shapley values. We've used the example of a company to illustrate the concept of Shapley values, but Shapley values can be used to summarize contributions to any cooperative game <script type="math/tex">w: \mathcal{P}(D) \mapsto \mathbb{R}</script>. Shapley values are appealing because they provide a mathematically principled summary of each player's contribution to <script type="math/tex">w</script>. Next, we'll discuss how SHAP and SAGE use Shapley values to help understand machine learning models.</p>
+
+        <h2>SHAP (SHapley Additive exPlanations)</h2>
+
+        <p>Let's re-enter the world of machine learning and see how the SHAP method uses Shapley values to explain individual predictions.</p>
+
+        <p>Consider a machine learning model <script type="math/tex">f</script> that predicts a response variable <script type="math/tex">y</script> given an input <script type="math/tex">x</script>, where <script type="math/tex">x</script> consists of individual features <script type="math/tex">(x^1, x^2, \ldots, x^d)</script>. We'll use uppercase symbols (e.g., <script type="math/tex">X</script>) to refer to random variables and lowercase symbols (e.g., <script type="math/tex">x</script>) to refer to values. SHAP is designed to explain why the model <script type="math/tex">f</script> makes the prediction <script type="math/tex">f(x)</script> given the input <script type="math/tex">x</script>.</p>
+
+        <p>As a running example, let's consider a model <script type="math/tex">f</script> used by a bank to assess the likelihood of loan repayment. To keep it simple let's say there are just five features: the loan amount, the amount in the customer's checking account, the customer's age, their residence type, and their job. And let's say that the model <script type="math/tex">f</script> predicts the probability that the loan will be repaid.</p>
+
+        <p>Let's also focus on a single customer. John comes to the bank and requests a loan for $2,500, and he has $12,000 in his checking account, he's a 23 year old startup employee, and he lives in an apartment. The model predicts <script type="math/tex">f(x) = 0.7</script>, or that there's only a 70% chance John will repay his loan. That's a bit low, and John wants to know if it's because of his age, his job, or something else.</p>
+
+        <p>SHAP explains an individual prediction by assigning values <script type="math/tex">\phi_1, \phi_2, \ldots, \phi_d</script> to each feature <script type="math/tex">x^1, x^2, \ldots, x^d</script> that quantify the feature's influence on the prediction <script type="math/tex">f(x)</script> (Figure 4). More specifically, each feature's value represents a contribution to the amount by which <script type="math/tex">f(x)</script> deviates from the mean prediction <script type="math/tex">\mathbb{E}[f(X)]</script>. In other words, why does this prediction <script type="math/tex">f(x)</script> differ from the mean prediction <script type="math/tex">\mathbb{E}[f(X)]</script>? Or in this case, why does John's probability of repayment <script type="math/tex">f(x)</script> seem lower (riskier) than the average customer's <script type="math/tex">\mathbb{E}[f(X)]</script>?</p>
+
+        <figure class="figure">
+          <img src="images/shap_diagram.png" class="figure-img img-fluid">
+          <figcaption class="figure-caption">Figure 4: SHAP assigns each feature a value that represents whether the feature pushes the prediction <script type="math/tex">f(x)</script> higher or lower. For John, the loan amount and the checking amount push the probability of repayment higher, while his age, residence type and job push it lower.</figcaption>
+        </figure>
+
+        <p>To illustrate how SHAP works in an intuitive way, we'll imagine that our model is a human expert—an expert who is very good at making accurate predictions, but isn't so good at explaining their logic. Furthermore, we'll assume that this expert is willing to make predictions given any subset of features (without knowing a customer's age, for example).</p>
+
+        <p>When the expert says that John seems risky, we might ask, "what would you have said if I told you everything but the fact that he works for a startup?" Perhaps John would seem more likely to repay. Or, we might ask, "what would you have said if I told you everything but John's job, the fact that he's 23, and that he lives in an apartment?" Now John may seem much more likely to repay. By providing the expert with subsets of features, we can see whether holding out each feature moves their prediction higher or lower.</p>
+
+        <p>If we define the set function <script type="math/tex">v_x(S)</script> to represent the expert's prediction given the features <script type="math/tex">x^S = \{x^i \; | \; i \in S\}</script>, then we could use the Shapley values <script type="math/tex">\phi_i(v_x)</script> to summarize how much each feature <script type="math/tex">i \in D</script> contributes to the prediction. This is just like what we did with the imaginary company, except we're replacing employees with features, and we're replacing the company's profitability with the expert's prediction. The features containing the most evidence for successful repayment will have large positive values <script type="math/tex">\phi_i(v_x) > 0</script>, while uninformative features will have small values <script type="math/tex">\phi_i(v_x) \approx 0</script>, and features containing evidence for a failure to repay will have negative values <script type="math/tex">\phi_i(v_x) < 0</script>. This would be a great step towards understanding the expert's prediction logic.</p>
+
+        <p>However, it's a bit tougher to do this with a machine learning model <script type="math/tex">f</script>. The difference between the human expert and a machine learning model <script type="math/tex">f</script> is that models are brittle, and they usually require a fixed set of features. We can't just remove a couple features and ask for a prediction given <script type="math/tex">x^S</script>. SHAP therefore proposes a reasonable way of letting the model accommodate missing features. SHAP defines the cooperative game <script type="math/tex">v_{f, x}</script> to represent a prediction given only the features <script type="math/tex">x^S</script>, as</p>
+
+        <script type="math/tex mode=display">v_{f, x}(S) = \mathbb{E}[f(X) \; | \; X^S = x^S].</script>
+
+        <p>That means that the values <script type="math/tex">x^S</script> are known, but the remaining features are treated as a random variable <script type="math/tex">X^{\bar S}</script> (where <script type="math/tex">\bar S = D \setminus S</script>), and we take the mean prediction <script type="math/tex">f(X)</script> given that the unknown values follow the conditional distribution <script type="math/tex">X^{\bar S} \; | \; X^S = x^S</script>. Given this convention for making predictions using subsets of features, we can apply the Shapley value to define each feature's contribution to the prediction <script type="math/tex">f(x)</script> using the Shapley values <script type="math/tex">\phi_i(v_{f, x})</script>. These are SHAP values, and that's SHAP in a nutshell.</p>
+
+        <p>There's more to it in practice because calculating <script type="math/tex">\phi_i(v_{f, x})</script> exactly is computationally intractable. In fact, one of the SHAP paper's biggest contributions was proposing fast approximations that improve upon the algorithm proposed by the IME paper a couple years earlier [1, 4]. We won't talk about approximation in detail here, but KernelSHAP is fast and model-agnostic [1], and TreeSHAP is even faster because it's specific to tree-based models [5].</p>
+
+        <h2>SAGE (Shapley Additive Global importancE)</h2>
+
+        <p>Now, let's see how the SAGE method applies Shapley values to answer a different question about our machine learning models.</p>
+
+        <p>SAGE begins with the same setup, where we have a model <script type="math/tex">f</script> that predicts <script type="math/tex">y</script> given <script type="math/tex">x = (x^1, x^2, \ldots, x^d)</script>. This time we don't want to explain individual predictions <script type="math/tex">f(x)</script>, but we instead want to explain how much <script type="math/tex">f</script> relies on each feature <script type="math/tex">X^1, X^2, \ldots, X^d</script> overall. SAGE is a method for quantifying global feature importance (Figure 5).</p>
+
+        <figure class="figure">
+          <img src="images/sage_diagram.png" class="figure-img img-fluid">
+          <figcaption class="figure-caption">Figure 5: SAGE assigns each feature a value that represent how much the feature contributes to the model <script type="math/tex">f</script>'s performance. The most important features have the highest values.</figcaption>
+        </figure>
+
+        <p>How do we go about discovering which features are most important to a model? To get some intuition for SAGE, let's go back to the example of a human expert who makes good predictions but can't explain their logic.</p>
+
+        <p>To understand which features the expert derives the most information from, we can run an experiment where we deprive them of certain features and see how much their prediction accuracy suffers. For example, we can take a large sample of customers and ask the expert to predict their probability of repayment given everything but the customer's age. Their accuracy will probably drop by a little bit. Similarly, we can ask the expert to predict the probability of repayment when given everything except age, checking account balance and job. Now their accuracy should drop by a lot, because they're being deprived of critical information.</p>
+
+        <p>Building on this way of interrogating the expert, we can define a set function <script type="math/tex">v(S)</script> to represent their accuracy given the features <script type="math/tex">X^S = \{X^i \; | \; i \in S\}</script>. Using the same logic as we did with previous cooperative games, we can use the Shapley values <script type="math/tex">\phi_i(v)</script> to get a sense of how much the expert relies on each feature. The most important features would have high values <script type="math/tex">\phi_i(v) > 0</script>, and unimportant features would have low values.</p>
+
+        <p>To apply this same method to a machine learning model <script type="math/tex">f</script>, we must once again confront the problem that <script type="math/tex">f</script> requires a fixed set of features. That's okay, because we can use the same trick as above and deal with the missing features using their conditional distribution <script type="math/tex">X^{\bar S} \; | \; X^S = x^S</script>. New notation is helpful here, so we use <script type="math/tex">f_S</script> to denote a <em>restricted model</em> defined as</p>
+
+        <script type="math/tex mode=display">f_S(x^S) = \mathbb{E}[f(X) \; | \; X^S = x^S].</script>
+
+        <p>The restricted model <script type="math/tex">f_S</script> lets us make predictions given subsets of features. (For a given <script type="math/tex">f, x</script> we have <script type="math/tex">f_S(x^S) = v_{f, x}(S)</script>, but we use this notation because it shows explicitly that <script type="math/tex">f_S</script> is a model.) Finally, we can define a cooperative game <script type="math/tex">v_f</script> using a loss function <script type="math/tex">\ell</script> (e.g., MSE or cross entropy loss) as</p>
+
+        <script type="math/tex mode=display">v_f(S) = - \mathbb{E}[\ell(f_S(X^S), Y)].</script>
+
+        <p>For any subset <script type="math/tex">S \subseteq D</script>, the quantity <script type="math/tex">v_f(S)</script> represents <script type="math/tex">f</script>'s performance given the features <script type="math/tex">X^S</script>, and we have a minus sign in front of the loss so that lower loss (improved performance) increases the value <script type="math/tex">v_f(S)</script>.</p>
+
+        <p>Now, we can use the Shapley values <script type="math/tex">\phi_i(v_f)</script> to quantify each feature's contribution to the model's performance. The features that are most critical for the model to make good predictions will have large values <script type="math/tex">\phi_i(v_f) > 0</script>, while unimportant features will have small values <script type="math/tex">\phi_i(v_f) \approx 0</script>, and only features that make the model's performance worse will have negative values <script type="math/tex">\phi_i(v_f) < 0</script>. These are SAGE values, and that's SAGE in a nutshell.</p>
+
+        <p>The <a href="https://arxiv.org/abs/2004.00668">paper</a> describes SAGE and its properties in more detail, and it also proposes an algorithm for estimating SAGE values efficiently [2]. On the theory side, the paper shows that SAGE provides insight about intrinsic properties of the data distribution (which might be called <em>explaining the data</em> instead of <em>explaining the model</em>), and that SAGE unifies a bunch of existing methods. We touch on both points briefly below.</p>
+
+        <p><strong>Explaining the data.</strong> SAGE is primarily a tool for model interpretation. However, the paper shows that SAGE can be used to provide insight about the data distribution when it's applied with optimal models (e.g., Bayes optimal). For example, when SAGE is applied with the Bayes classifier <script type="math/tex">f(x) = p(y \; | \; x)</script> and cross entropy loss, SAGE values are equal to the Shapley values of the mutual information function <script type="math/tex">v_f(S) = I(Y; X^S)</script>. This is good news for users in domains like computational biology who use machine learning as a tool to learn about the world, and who aren't as interested in models for their own sake. When the model <script type="math/tex">f</script> is near optimal, it can be used as a tool for learning about patterns in the data and the real world.</p>
+
+        <p><strong>Unifying the literature on feature importance.</strong> The paper proposes a class of methods that provide additive approximations of a set function that quantifies the predictive power of subsets of features (so-called <em>additive importance measures</em>). Fully explaining the idea would take more space, but the point is that this framework connects a bunch of methods that were previously viewed as unrelated. Permutation tests are one of the unified methods, and we can explain briefly how SAGE differs from and improves upon permutation tests.</p>
+
+        <p>Permutation tests were proposed by Leo Breiman for assessing feature importance for random forest models, and they calculate how much the model performance drops when each feature is held out, or more specifically, when each column of the dataset is permuted [6]. SAGE can be viewed as an extension to a permutation test that fixes a couple problems:</p>
+
+        <ul>
+          <li>Instead of holding out one feature at a time, SAGE holds out larger subsets of features. That is, instead of only considering <script type="math/tex">S \in \{D \setminus \{i\} \; | \; i \in D\}</script>, SAGE considers all <script type="math/tex">S \subseteq D</script>. (By only removing individual features, permutation tests may make mistakes like erroneously assigning low importance to features with good proxies.)</li>
+          <li>In a permutation test, holding out features by permuting a column of the dataset is like replacing missing features with draws from their marginal distribution <script type="math/tex">p(X^{\bar S})</script>. SAGE instead replaces them with draws from their conditional distribution <script type="math/tex">p(X^{\bar S} \; | \; X^S = x^S)</script>. (Using the conditional distribution simulates the absence of a feature, whereas using the marginal unfairly hinders the model by providing unlikely feature combinations.)</li>
+          <li>Instead of measuring the average loss with predictions using resamplings of missing features, SAGE measures the loss with the average prediction using resamplings of missing features. That's a bit wordy, but it means that SAGE uses <script type="math/tex">\mathbb{E}[\ell(\mathbb{E}[f(X) \; | \; X^S = x^S], y)]</script> instead of <script type="math/tex">\mathbb{E}[\ell(f(X), y) \; | \; X^S = x^S]</script>. (Putting the expectation inside the loss is crucial for allowing SAGE to connect with properties of the data distribution, like mutual information.)</li>
+        </ul>
+
+        <p>That's a brief description of SAGE, and hopefully this has given you an understanding of its foundations in game theory, as well as some intuition for how it relates to existing methods.</p>
+
+        <h2>How SHAP and SAGE are related</h2>
+
+        <p>SHAP and SAGE are clearly connected by the fact that they both use Shapley values to understand machine learning models. But since they answer fundamentally different questions about a model (local interpretability versus global interpretability) it isn't immediately clear whether the connection goes deeper than that, or whether SAGE values <script type="math/tex">\phi_i(v_f)</script> are related to SHAP values <script type="math/tex">\phi_i(v_{f, x})</script> for individual examples.</p>
+
+        <p>The answer is that there is no simple relationship between <script type="math/tex">\phi_i(v_f)</script> and <script type="math/tex">\phi_i(v_{f, x})</script>. However, it turns out SAGE values can be calculated using a variant of the SHAP value known as the <em>loss SHAP value</em>. Instead of understanding an individual prediction using the cooperative game <script type="math/tex">v_{f, x}</script>, we can use a cooperative game <script type="math/tex">v_{f, x, y}</script> to represent the value of the loss for an individual input-output pair <script type="math/tex">(x, y)</script> given subsets of features <script type="math/tex">x^S</script>:</p>
+
+        <script type="math/tex mode=display">v_{f, x, y}(S) = - \ell(f_S(x^S), y)</script>
+
+        <p>The Shapley values of this cooperative game <script type="math/tex">\phi_i(v_{f, x, y})</script> are called the loss SHAP values, and they represent how much each feature contributes to the correctness of the prediction. Features that make the prediction more correct have large values <script type="math/tex">\phi_i(v_{f, x, y}) > 0</script>, and features that make the prediction less correct have negative values <script type="math/tex">\phi_i(v_{f, x, y}) < 0</script>. The SAGE paper shows that SAGE values are equal to the expectation of the loss SHAP values, due to the linearity property of Shapley values [2]. In math notation, we have</p>
+
+        <script type="math/tex mode=display">\phi_i(v_f) = \mathbb{E}_{XY}[\phi_i(v_{f, X, Y})].</script>
+
+        <p>The connection is important because it shows that a principled global explanation can be achieved via local explanations (Figure 6). This represents the deeper connection between SAGE and SHAP, and it also suggests that SAGE values may be calculated by obtaining loss SHAP values for the whole dataset and then calculating the mean. However, since waiting for each set of loss SHAP values to converge and then averaging them (possibly for hundreds or thousands of examples in the dataset) is very slow, the SAGE paper proposes a faster approximation algorithm that aims directly at the global explanation (which we'll refer to here as SAGE sampling) [2].</p>
+
+        <figure class="figure">
+          <img src="images/loss_shap_diagram.png" class="figure-img img-fluid">
+          <figcaption class="figure-caption">Figure 6: SAGE values are the expectation of loss SHAP values, so they can be calculated by averaging many local explanations.</figcaption>
+        </figure>
+
+        <p>In summary, Table 1 provides a comparison between SHAP values, loss SHAP values, and SAGE values.</p>
+
+        <table class="table table-sm table-bordered">
+          <caption>Table 1: Comparison of SHAP values, loss SHAP values, and SAGE values. The methods answer different questions about machine learning models, but all are built on the Shapley value.</caption>
+          <thead class="thead-light">
+            <tr>
+              <th class="text-center"></td>
+              <th class="text-center">SHAP</td>
+              <th class="text-center">Loss SHAP</td>
+              <th class="text-center">SAGE</td>
+            </tr>
+          </thead>
+          <tr>
+            <td class="text-center">Type of explanation</td>
+            <td class="text-center">Local</td>
+            <td class="text-center">Local</td>
+            <td class="text-center">Global</td>
+          </tr>
+          <tr>
+            <td class="text-center">Cooperative game</td>
+            <td class="text-center"><script type="math/tex">v_{f, x}</script></td>
+            <td class="text-center"><script type="math/tex">v_{f, x, y}</script></td>
+            <td class="text-center"><script type="math/tex">v_f</script></td>
+          </tr>
+          <tr>
+            <td class="text-center">Feature values</td>
+            <td class="text-center"><script type="math/tex">\phi_i(v_{f, x})</script></td>
+            <td class="text-center"><script type="math/tex">\phi_i(v_{f, x, y})</script></td>
+            <td class="text-center"><script type="math/tex">\phi_i(v_f)</script></td>
+          </tr>
+          <tr>
+            <td class="align-middle text-center">Meaning</td>
+            <td class="align-middle text-center">Contribution to <br>prediction <script type="math/tex">f(x)</script></td>
+            <td class="align-middle text-center">Contribution to <br>correctness of <script type="math/tex">f(x)</script></td>
+            <td class="align-middle text-center">Contribution to <br><script type="math/tex">f</script>'s performance</td>
+          </tr>
+          <tr>
+            <td class="align-middle text-center">Approximation</td>
+            <!-- <td class="align-middle text-center">IME<br>KernelSHAP<br>TreeSHAP</td>
+            <td class="align-middle text-center">Loss SHAP sampling<br>TreeSHAP</td>
+            <td class="align-middle text-center">Mean loss SHAP value<br>SAGE sampling</td> -->
+            <td class="align-middle text-center">IME [4]<br>KernelSHAP [1]<br>TreeSHAP [5]</td>
+            <td class="align-middle text-center">Loss SHAP sampling [2]<br>TreeSHAP [5]</td>
+            <td class="align-middle text-center">Mean loss SHAP value [2]<br>SAGE sampling [2]</td>
+          </tr>
+        </table>
+
+        <h2>Conclusion</h2>
+
+        <p>I hope this post has given you a better understanding of Shapley values, and of SHAP and SAGE. Shapley values are pretty easy to understand outside the context of of machine learning, like with our example of a company that wants to allocate bonuses fairly. It's natural to apply the same logic to understand machine learning models by removing subsets of features, once we do a little extra work to deal with the fact that models require fixed sets of features.</p>
+
+        <p>SHAP and SAGE are both built on the Shapley value, but each answers a different kind of question about models. Interestingly, it turns out that the global explanation from SAGE can be obtained by aggregating many loss SHAP values, which are local explanations. We hope that this post helped you understand SHAP and SAGE better, and encourage you to try them out! SHAP's Github page is <a href="https://github.com/slundberg/shap">here</a>, and SAGE's Github page is <a href="https://github.com/icc2115/sage">here</a>.</p>
+
+        <h2>References</h2>
+
+        <ol>
+          <li>Scott Lundberg, Su-In Lee. "A Unified Approach to Interpreting Model Predictions." Neural Information Processing Systems, 2017.</li>
+          <li>Ian Covert, Scott Lundberg, Su-In Lee. "Understanding Global Feature Contributions Through Additive Importance Measures." <em>arXiv preprint arXiv:2004.00668</em>, 2020.</li>
+          <li>Lloyd Shapley. "A Value for n-Person Games." Contributions to the Theory of Games, 1953.</li>
+          <li>Erik Strumbelj, Igor Kononenko. "An Efficient Explanation of Individual Classifications Using Game Theory." Journal of Machine Learning Research, 2010.</li>
+          <li>Scott Lundberg et al. "From Local Explanations to Global Understanding with Explainable AI for Trees." Nature Machine Intelligence, 2020.</li>
+          <li>Leo Breiman. "Random Forests." Machine Learning, 2001.</li>
+          <!-- <li></li> -->
+        </ol>
+
+        <h2>Acknowledgements</h2>
+
+        Thanks to the people who helped me revise thise. All the icons used in my diagrams were made by <a href="https://www.flaticon.com/authors/freepik">Freepik</a> and are available at <a href="www.flaticon.com">www.flaticon.com</a>.
+
+      </div>
+    </div>
+  </div>
+  <footer class="page-footer">
+    <div class="footer-copyright text-center py-3">© 2020 Copyright: 
+      <a href="https://iancovert.com/">iancovert.com</a>
+    </div>
+  </footer>
+
+  <!-- Render math with Katex -->
+  <script>
+    var scripts = document.getElementsByTagName("script");
+    for (var i = 0; i < scripts.length; i++) {
+      /* TODO: keep going after an individual parse error. */
+      var script = scripts[i];
+      if (script.type.match(/^math\/tex/)) {
+        var text = script.text === "" ? script.innerHTML : script.text;
+        var options = script.type.match(/mode\s*=\s*display/) ?
+                      {displayMode: true} : {};
+        script.insertAdjacentHTML("beforebegin",
+                                  katex.renderToString(text, options));
+      }
+    }
+    document.body.className += " math_finished";
+  </script>
+</body>
