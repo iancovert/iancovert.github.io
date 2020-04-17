@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-89623822-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-89623822-2');
+  </script> -->
+  <title>Ian's Blog</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js" integrity="sha384-/y1Nn9+QQAipbNQWU65krzJralCnuOasHncUFXGkdwntGeSvQicrYkiUBwsgUqc1" crossorigin="anonymous"></script>
+  <style>
+    body {
+      font-family: "Georgia";
+    }
+    .navbar {
+      padding-top: 26px;
+      padding-bottom: 24px;
+      padding-left: 5%;
+      padding-right: 5%;
+    }
+    .navbar .nav-link {
+      font-size: 1.25rem;
+    }
+    .navbar a {
+      color: inherit;
+    }
+    .header-separator {
+      margin-top: 0px;
+    }
+    .avatar {
+      float: left;
+      height: 48px;
+      width: 48px;
+      margin-right: 30px;
+      margin-top: -8px;
+    }
+    a:hover {
+      text-decoration: none;
+    }
+    .post-list h1 {
+      margin-bottom: 32px;
+    }
+    .post-list a {
+        color: inherit;
+    }
+    .post-list td {
+      padding: 0.5em 1em;
+    }
+    footer {
+      padding-top: 15px;
+      padding-bottom: 15px;
+      background-color: #eee;
+    }
+    footer .footer-copyright a {
+      text-decoration: none;
+      color: inherit;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+        <img src="/images/headshot.jpg" class="d-inline-block avatar">
+        Ian Covert
+      </a>
+
+      <!-- TODO confusing behavior when page is too narrow -->
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/blog">Blog</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <hr class="header-separator">
+
+  <div class="container post-list">
+    <div class="row justify-content-md-center">
+        <h1>Blog posts</h1>
+    </div>
+
+    <!-- Big titles -->
+    <!-- <div class="row justify-content-md-center">
+      <div class="col-lg-8">
+        <h2><a href="/blog/understanding-shap-sage">Understanding machine learning models with SHAP and SAGE</a></h2>
+      </div>
+    </div> -->
+
+    <!-- Table -->
+    <div class="row justify-content-md-center">
+        <div class="col-lg-8">
+            <table width="100%">
+              <tr>
+                <td width="25%">April 20, 2020</td>
+                <td><a href="/blog/understanding-shap-sage">Understanding machine learning models with SHAP and SAGE</a></td>
+              </tr>
+              <!-- <tr>
+                <td width="25%">April 14, 2020</td>
+                <td>Another post</td>
+              </tr> -->
+            </table>
+        </div>
+    </div>
+  </div>
+  
+  <footer class="page-footer fixed-bottom"> <!-- TODO remove fixed bottom later -->
+    <div class="footer-copyright text-center py-3">© 2020 Copyright: 
+      <a href="https://iancovert.com/">iancovert.com</a>
+    </div>
+  </footer>
+
+  <!-- Render math with Katex -->
+  <script>
+    var scripts = document.getElementsByTagName("script");
+    for (var i = 0; i < scripts.length; i++) {
+      /* TODO: keep going after an individual parse error. */
+      var script = scripts[i];
+      if (script.type.match(/^math\/tex/)) {
+        var text = script.text === "" ? script.innerHTML : script.text;
+        var options = script.type.match(/mode\s*=\s*display/) ?
+                      {displayMode: true} : {};
+        script.insertAdjacentHTML("beforebegin",
+                                  katex.renderToString(text, options));
+      }
+    }
+    document.body.className += " math_finished";
+  </script>
+</body>
