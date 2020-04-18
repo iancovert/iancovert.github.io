@@ -107,31 +107,33 @@
         <hr>
         <div class="meta">
           <span class="author">By <a href="">Ian Covert</a></span>
-          <span class="date">April 20, 2020</span>
+          <span class="date">April 18, 2020</span>
         </div>
         <hr>
 
-        <p>In this post I'll explain <a href="https://arxiv.org/abs/1705.07874">SHAP</a> [1] and <a href="https://arxiv.org/abs/2004.00668">SAGE</a> [2], two game-theoretic methods for understanding machine learning models. Both methods are valuable tools for understanding the logic behind model predictions, and in some cases they can provide insight into real patterns in the world (more on that later).</p>
+        <!-- <p>In this post I'll explain <a href="https://arxiv.org/abs/1705.07874">SHAP</a> [1] and <a href="https://arxiv.org/abs/2004.00668">SAGE</a> [2], two game-theoretic methods for understanding machine learning models. Both methods are valuable tools for understanding the logic behind model predictions, and in some cases they can provide insight into real patterns in the world (more on that later).</p>
 
         <p>SHAP is a well-known tool for explaining individual model predictions, which is the goal of <em>local</em> interpretability. SAGE is recently proposed method for explaining the model's behavior across the entire dataset, which is the goal of <em>global</em> interpretability. In this post we'll describe the math behind these two methods, and then see how they're related.</p>
 
-        <h2>Introduction</h2>
+        <h2>Introduction</h2> -->
 
-        <p>Machine learning models can be complicated, particularly expressive model types like decision forests and neural networks. No interpretability tool provides a perfect understanding of a model or a solution for all our needs, so we require different tools to understand our models in different ways. SHAP and SAGE are two such tools, and each answers a specific type of question:</p>
+        <p>Machine learning models can be complicated, particularly expressive model types like decision forests and neural networks. No interpretability tool provides a perfect understanding of a model or a solution for all our needs, so we require different tools to understand our models in different ways. In this post we'll explain <a href="https://arxiv.org/abs/1705.07874">SHAP</a> [1] and <a href="https://arxiv.org/abs/2004.00668">SAGE</a> [2], two game theoretic methods based on the Shapley value.</p>
+
+        <p>Each method answers a specific type of question:</p>
 
         <ul>
           <li>SHAP answers the question <em>how much does each feature contribute to this individual prediction?</em></li>
           <li>SAGE answers the question <em>how much does the model depend on each feature overall?</em></li>
         </ul>
 
-        <p>From these questions, it's clear that SHAP is a method for explaining individual predictions (local interpretability), whereas SAGE is a method for explaining the model's behavior across the whole dataset (global interpretability). Figure 1 shows how each method is used.</p>
+        <p>SHAP is a method for explaining individual predictions (<em>local</em> interpretability), whereas SAGE is a method for explaining the model's behavior across the whole dataset (<em>global</em> interpretability). Figure 1 shows how each method is used.</p>
 
         <figure class="figure">
           <img src="images/shap_vs_sage.png" class="figure-img img-fluid">
           <figcaption class="figure-caption">Figure 1: SHAP explains how each feature contributes to an individual prediction, while SAGE explains how each feature contributes to the model's overall performance.</figcaption>
         </figure>
 
-        <p>Both questions can be answered by a number of methods, so what makes SHAP and SAGE appealing is that they answer their respective questions in a mathematically principled fashion. It's their use of the Shapley value that leads to many of their desirable properties, but sadly this aspect of the methods is complicated and unfamiliar to most users. To fix that, the goal of this post is to explain SHAP/SAGE's foundations in cooperative game theory.</p>
+        <p>Both local and global interpretability can be addressed with a number of methods, so what makes SHAP and SAGE appealing is that they answer their respective questions in a mathematically principled fashion. It's their use of the Shapley value that leads to many of their desirable properties, but this aspect of the methods is complicated and unfamiliar to most users. To fix that, we'll use this post to explain SHAP/SAGE's foundations in cooperative game theory.</p>
 
         <p>We'll start by reviewing the Shapley value, a concept from game theory that's essential for understanding SHAP and SAGE. Then we'll explain how SHAP and SAGE apply Shapley values to model understanding, and finally we'll see how the two are connected. Without further introduction, let's jump in.</p>
 
@@ -139,7 +141,7 @@
 
         <p>Shapley values were developed by Lloyd Shapley in a 1953 paper [3] to assign credit to players in a cooperative game. The paper was written in the field of game theory, so Shapley values actually have nothing to do with machine learning. Let's illustrate the idea behind Shapley values using a scenario with no machine learning involved.</p>
 
-        <p>Imagine a company with <script type="math/tex">d</script> employees, which are represented by the set <script type="math/tex">D = \{1, 2, \ldots, d\}</script>. The company makes $1,000,000 a year in profits when all the employees in <script type="math/tex">D</script> do their job, and management wants to distribute the profits through bonuses (Figure 2). But they want to do so in a fair way, by rewarding people in accordance with their contribution to the company's profits.</p>
+        <p>Imagine a company with <script type="math/tex">d</script> employees who are represented by the set <script type="math/tex">D = \{1, 2, \ldots, d\}</script>. The company makes $1,000,000 a year in profits when all the employees do their job (everyone in <script type="math/tex">D</script>), and management wants to distribute the profits through bonuses (Figure 2). But they want to do so in a fair way, by rewarding people in accordance with their contribution to the company's profits.</p>
 
         <figure class="figure">
           <img src="images/company.png" class="figure-img img-fluid">
@@ -152,19 +154,19 @@
           <li>With all their employees working (<script type="math/tex">S = D</script>) they make $1,000,000.</li>
           <li>If everyone stayed but they lost their CEO (<script type="math/tex">S = \{2, 3, \ldots, d\}</script>), they would make just half as much money, $500,000.</li>
           <li>If they kept everyone except for a couple of new hires (<script type="math/tex">S = \{1, 2, \ldots, d - 2\}</script>), they would make almost as much profit, $950,000.</li>
-          <li>If no one worked there (<script type="math/tex">S = \varnothing</script>) they would make precisely zero dollars.</li>
+          <li>If no one worked there (<script type="math/tex">S = \{\}</script>) they would make precisely zero dollars.</li>
         </ul>
 
         <p>These were just a couple examples, but the management team knows how profitable the company would have been with all <script type="math/tex">2^d</script> subsets of employees. Management summarizes their knowledge with a profitability function</p>
 
         <script type="math/tex mode=display">w: \mathcal{P}(D) \mapsto \mathbb{R}</script>
 
-        <p>where <script type="math/tex">\mathcal{P}(D)</script> represents the power set of <script type="math/tex">D</script> (i.e., all subsets of <script type="math/tex">D</script>). For any subset of employees <script type="math/tex">S \subseteq D</script>, the quantity <script type="math/tex">w(S)</script> is the amount of profit the company makes with the employees in <script type="math/tex">S</script> doing their job. Intuitively, <script type="math/tex">w</script> shows that the company is more profitable when more employees are doing their job, but especially when the more important employees are included in <script type="math/tex">S</script>.</p>
+        <p>where <script type="math/tex">\mathcal{P}(D)</script> represents the power set of <script type="math/tex">D</script> (i.e., all subsets of <script type="math/tex">D</script>). For any subset of employees <script type="math/tex">S \subseteq D</script>, the quantity <script type="math/tex">w(S)</script> is the amount of profit the company makes with the employees in <script type="math/tex">S</script> doing their job.</p>
 
         <p>Armed with the knowledge represented by <script type="math/tex">w</script>, the management team holds a meeting to discuss giving bonuses <script type="math/tex">\phi_1(w), \phi_2(w), \ldots, \phi_d(w)</script> to each employee <script type="math/tex">1, 2, \ldots, d</script>. (Note that the bonuses <script type="math/tex">\phi_i(w)</script> depend on the profitability function <script type="math/tex">w</script>, because if <script type="math/tex">w</script> were different then the bonuses should change.) Management holds a meeting to discuss what it means to allocate bonuses fairly, and they come up with the following goals:</p>
 
         <ol>
-          <li>(Efficiency) The bonuses should add up to the difference between the profitability with all employees and the profitability with no employees, i.e., <script type="math/tex">\sum_{i \in D} \phi_i(w) = w(D) - w(\varnothing)</script>.</li>
+          <li>(Efficiency) The bonuses should add up to the difference between the profitability with all employees and the profitability with no employees, i.e., <script type="math/tex">\sum_{i \in D} \phi_i(w) = w(D) - w(\{\})</script>.</li>
           <li>(Symmetry) If two employees <script type="math/tex">i, j</script> are interchangeable, so that their addition always yields the same result, with <script type="math/tex">w(S \cup \{i\}) = w(S \cup \{j\})</script> for all <script type="math/tex">S</script>, then their bonuses should be identical, i.e., <script type="math/tex">\phi_i(w) = \phi_j(w)</script>.</li>
           <li>(Dummy) If employee <script type="math/tex">i</script> contributes nothing, so that their addition yields no change in profitability, with <script type="math/tex">w(S \cup \{i\}) = w(S)</script> for all <script type="math/tex">S</script>, then they should receive no bonus, i.e., <script type="math/tex">\phi_i(w) = 0</script>.</li>
           <li>(Linearity) Consider that the company's total profitability function <script type="math/tex">w</script> is equal to the linear combination of separate profitability functions <script type="math/tex">w_1, w_2, \ldots, w_k</script> for each of the company's <script type="math/tex">k</script> businesses, i.e., <script type="math/tex">w = c_1w_1 + c_2w_2 \ldots + c_kw_k</script>. Then the bonus for each employee determined on the company level <script type="math/tex">\phi_i(w)</script> should equal the linear combination of the employee's bonuses determined on the level of individual businesses <script type="math/tex">\phi_i(w_j)</script>, so that
@@ -255,7 +257,7 @@
 
         <p>The paper describes SAGE and its properties in more detail, and it also proposes an algorithm for estimating SAGE values efficiently [2]. On the theory side, the paper shows that SAGE provides insight about intrinsic properties of the data distribution (which might be called <em>explaining the data</em> instead of <em>explaining the model</em>), and that SAGE unifies a bunch of existing feature importance methods. We touch on both points briefly below.</p>
 
-        <p><strong>Explaining the data.</strong> SAGE is primarily a tool for model interpretation. However, the paper shows that SAGE can be used to provide insight about the data distribution when it's applied with optimal models (e.g., Bayes optimal). For example, when SAGE is applied with the Bayes classifier <script type="math/tex">f(x) = p(y \; | \; x)</script> and cross entropy loss, SAGE values are equal to the Shapley values of the mutual information function <script type="math/tex">v_f(S) = I(Y; X^S)</script>. This is good news for users in domains like computational biology who use machine learning as a tool to learn about the world, and who aren't as interested in models for their own sake. When the model <script type="math/tex">f</script> is near optimal, it can be used as a tool for learning about patterns in the real world.</p>
+        <p><strong>Explaining the data.</strong> SAGE is primarily a tool for model interpretation. However, the paper shows that SAGE can be used to provide insight about the data distribution when it's applied with optimal models (e.g., Bayes optimal). For example, when SAGE is applied with the Bayes classifier <script type="math/tex">f(x) = p(y \; | \; x)</script> and cross entropy loss, SAGE values are equal to the Shapley values of the mutual information function <script type="math/tex">v_f(S) = I(Y; X^S)</script>. This is good news for users in domains like computational biology who use machine learning to learn about the world (e.g., which genes are associated with breast cancer), and who aren't as interested in models for their own sake. When the model <script type="math/tex">f</script> is near optimal, it can be used as a tool for learning about patterns in the real world.</p>
 
         <p><strong>Unifying the literature on feature importance.</strong> The paper proposes a class of methods that provide additive approximations of a set function that quantifies the predictive power of subsets of features (so-called <em>additive importance measures</em>). Fully explaining the idea would take more space, but the point is that this framework connects a bunch of methods that were previously viewed as unrelated. Permutation tests are one of the unified methods, and we can explain briefly how SAGE differs from permutation tests.</p>
 
@@ -283,7 +285,7 @@
 
         <script type="math/tex mode=display">\phi_i(v_f) = \mathbb{E}_{XY}[\phi_i(v_{f, X, Y})].</script>
 
-        <p>The connection is important because it shows that a principled global explanation can be achieved via many local explanations (Figure 6). This represents the deeper connection between SAGE and SHAP, and it also suggests that SAGE values may be calculated by obtaining loss SHAP values for the whole dataset and then calculating the mean. However, since waiting for each set of loss SHAP values to converge and then averaging them (possibly for hundreds or thousands of examples in the dataset) is very slow, the SAGE paper proposes a faster approximation algorithm that aims directly at the global explanation (which we'll refer to here as SAGE sampling) [2].</p>
+        <p>The connection is important because it shows that a principled global explanation can be achieved via many local explanations—SAGE values can be obtained by calculating loss SHAP values for the whole dataset and then taking the mean (Figure 6). However, waiting for each set of loss SHAP values to converge and then averaging them (possibly for hundreds or thousands of examples in the dataset) is very slow, so the SAGE paper proposes a faster approximation algorithm that aims directly at the global explanation (which we'll refer to here as SAGE sampling) [2].</p>
 
         <figure class="figure">
           <img src="images/loss_shap_diagram.png" class="figure-img img-fluid">
