@@ -107,17 +107,11 @@
         <hr>
         <div class="meta">
           <span class="author">By <a href="">Ian Covert</a></span>
-          <span class="date">April 18, 2020</span>
+          <span class="date">April 24, 2020</span>
         </div>
         <hr>
 
-        <!-- <p>In this post I'll explain <a href="https://arxiv.org/abs/1705.07874">SHAP</a> [1] and <a href="https://arxiv.org/abs/2004.00668">SAGE</a> [2], two game-theoretic methods for understanding machine learning models. Both methods are valuable tools for understanding the logic behind model predictions, and in some cases they can provide insight into real patterns in the world (more on that later).</p>
-
-        <p>SHAP is a well-known tool for explaining individual model predictions, which is the goal of <em>local</em> interpretability. SAGE is recently proposed method for explaining the model's behavior across the entire dataset, which is the goal of <em>global</em> interpretability. In this post we'll describe the math behind these two methods, and then see how they're related.</p>
-
-        <h2>Introduction</h2> -->
-
-        <p>Machine learning models can be complicated, particularly expressive model types like decision forests and neural networks. No interpretability tool provides a perfect understanding of a model or a solution for all our needs, so we require different tools to understand our models in different ways. In this post we'll explain <a href="https://arxiv.org/abs/1705.07874">SHAP</a> [1] and <a href="https://arxiv.org/abs/2004.00668">SAGE</a> [2], two game theoretic methods based on the Shapley value.</p>
+        <p>Machine learning models can be complicated, particularly expressive model types like decision forests and neural networks. No interpretability tool provides a perfect understanding of a model or a solution for all our needs, so we require different tools to understand our models in different ways. In this post I'll explain <a href="https://arxiv.org/abs/1705.07874">SHAP</a> [1] and <a href="https://arxiv.org/abs/2004.00668">SAGE</a> [2], two game theoretic methods based on the Shapley value.</p>
 
         <p>Each method answers a specific type of question:</p>
 
@@ -130,7 +124,7 @@
 
         <figure class="figure">
           <img src="images/shap_vs_sage.png" class="figure-img img-fluid">
-          <figcaption class="figure-caption">Figure 1: SHAP explains how each feature contributes to an individual prediction, while SAGE explains how each feature contributes to the model's overall performance.</figcaption>
+          <figcaption class="figure-caption">Figure 1: SHAP explains individual predictions, while SAGE explains the model's overall performance.</figcaption>
         </figure>
 
         <p>Both local and global interpretability can be addressed with a number of methods, so what makes SHAP and SAGE appealing is that they answer their respective questions in a mathematically principled fashion. It's their use of the Shapley value that leads to many of their desirable properties, but this aspect of the methods is complicated and unfamiliar to most users. To fix that, we'll use this post to explain SHAP/SAGE's foundations in cooperative game theory.</p>
@@ -234,7 +228,7 @@
 
         <figure class="figure">
           <img src="images/sage_diagram.png" class="figure-img img-fluid">
-          <figcaption class="figure-caption">Figure 5: SAGE assigns each feature a value that represent how much the feature contributes to the model <script type="math/tex">f</script>'s performance. The most important features have the highest values.</figcaption>
+          <figcaption class="figure-caption">Figure 5: SAGE assigns each feature a value that represent how much the feature contributes to <script type="math/tex">f</script>'s performance. The most important features have the highest values.</figcaption>
         </figure>
 
         <p>How do we figure out which features are most important to a model? To get some intuition for SAGE, let's go back to the human expert who makes good predictions but can't explain their logic.</p>
@@ -255,7 +249,7 @@
 
         <p>Now, we can use the Shapley values <script type="math/tex">\phi_i(v_f)</script> to quantify each feature's contribution to the model's performance. The features that are most critical for the model to make good predictions will have large values <script type="math/tex">\phi_i(v_f) > 0</script>, while unimportant features will have small values <script type="math/tex">\phi_i(v_f) \approx 0</script>, and only features that make the model's performance worse will have negative values <script type="math/tex">\phi_i(v_f) < 0</script>. These are SAGE values, and that's SAGE in a nutshell.</p>
 
-        <p>The paper describes SAGE and its properties in more detail, and it also proposes an algorithm for estimating SAGE values efficiently [2]. On the theory side, the paper shows that SAGE provides insight about intrinsic properties of the data distribution (which might be called <em>explaining the data</em> instead of <em>explaining the model</em>), and that SAGE unifies a bunch of existing feature importance methods. We touch on both points briefly below.</p>
+        <p>The paper describes SAGE and its properties in more detail, and it also proposes an algorithm for estimating SAGE values efficiently [2]. On the theory side, the paper shows that SAGE provides insight about intrinsic properties of the data distribution (which might be called <em>explaining the data</em> instead of <em>explaining the model</em>), and that SAGE unifies a bunch of existing feature importance methods. I touch on both points briefly below.</p>
 
         <p><strong>Explaining the data.</strong> SAGE is primarily a tool for model interpretation. However, the paper shows that SAGE can be used to provide insight about the data distribution when it's applied with optimal models (e.g., Bayes optimal). For example, when SAGE is applied with the Bayes classifier <script type="math/tex">f(x) = p(y \; | \; x)</script> and cross entropy loss, SAGE values are equal to the Shapley values of the mutual information function <script type="math/tex">v_f(S) = I(Y; X^S)</script>. This is good news for users in domains like computational biology who use machine learning to learn about the world (e.g., which genes are associated with breast cancer), and who aren't as interested in models for their own sake. When the model <script type="math/tex">f</script> is near optimal, it can be used as a tool for learning about patterns in the real world.</p>
 
@@ -275,7 +269,7 @@
 
         <p>SHAP and SAGE are clearly connected by the fact that they both use Shapley values. But since they answer fundamentally different questions about a model (local interpretability versus global interpretability) it isn't immediately clear whether the connection goes deeper than that.</p>
 
-        <p>The answer is that there is no simple relationship between SAGE values <script type="math/tex">\phi_i(v_f)</script> and SHAP values <script type="math/tex">\phi_i(v_{f, x})</script> for individual examples. However, it turns out SAGE values are related to a variant of the SHAP value known as the <em>loss SHAP value</em>. Instead of understanding an individual prediction using the cooperative game <script type="math/tex">v_{f, x}</script>, we can use a cooperative game <script type="math/tex">v_{f, x, y}</script> to represent the value of the loss function for an individual input-output pair <script type="math/tex">(x, y)</script> given subsets of features <script type="math/tex">x^S</script>:</p>
+        <p>It turns out that there is no simple relationship between SAGE values <script type="math/tex">\phi_i(v_f)</script> and SHAP values <script type="math/tex">\phi_i(v_{f, x})</script> for individual examples. However, SAGE values are in fact related to a variant of the SHAP value known as the <em>loss SHAP value</em>. Instead of understanding an individual prediction using the cooperative game <script type="math/tex">v_{f, x}</script>, we can use a cooperative game <script type="math/tex">v_{f, x, y}</script> to represent the value of the loss function for an individual input-output pair <script type="math/tex">(x, y)</script> given subsets of features <script type="math/tex">x^S</script>:</p>
 
         <script type="math/tex mode=display">v_{f, x, y}(S) = - \ell(f_S(x^S), y)</script>
 
@@ -285,17 +279,24 @@
 
         <script type="math/tex mode=display">\phi_i(v_f) = \mathbb{E}_{XY}[\phi_i(v_{f, X, Y})].</script>
 
-        <p>The connection is important because it shows that a principled global explanation can be achieved via many local explanations—SAGE values can be obtained by calculating loss SHAP values for the whole dataset and then taking the mean (Figure 6). However, waiting for each set of loss SHAP values to converge and then averaging them (possibly for hundreds or thousands of examples in the dataset) is very slow, so the SAGE paper proposes a faster approximation algorithm that aims directly at the global explanation (which we'll refer to here as SAGE sampling) [2].</p>
+        <p>The connection is important because it shows that a principled global explanation can be achieved via many local explanations: SAGE values can be obtained by calculating loss SHAP values for the whole dataset and then taking the mean, as illustrated in Figure 6.</p>
 
         <figure class="figure">
           <img src="images/loss_shap_diagram.png" class="figure-img img-fluid">
-          <figcaption class="figure-caption">Figure 6: SAGE values are the expectation of loss SHAP values, so they can be calculated by averaging many local explanations.</figcaption>
+          <figcaption class="figure-caption">Figure 6: SAGE values are equal to the mean loss SHAP value.</figcaption>
         </figure>
 
-        <p>In summary, Table 1 provides a comparison between SHAP values, loss SHAP values, and SAGE values.</p>
+        <p>However, waiting for loss SHAP values to converge for hundreds or thousands of examples in the dataset is very slow. The SAGE paper therefore proposes a faster approximation algorithm (which we'll refer to here as SAGE sampling) that aims directly at a global explanation. With SAGE sampling, SAGE values can be calculated in the same amount of time as just a handful of individual loss SHAP values. Figure 7 shows a comparison of the convergence of loss SHAP values and SAGE values for a gradient boosting machine trained on the <a href="http://archive.ics.uci.edu/ml/datasets/statlog+(german+credit+data)">German Credit dataset</a>, and demonstrates that global explanations can be calculated at the cost of just <script type="math/tex">{\approx}10</script> local explanations.</p>
+
+        <figure class="figure text-center">
+          <img src="images/sage_convergence.png" class="figure-img img-fluid">
+          <figcaption class="figure-caption text-left">Figure 7: Convergence comparison between SAGE values and loss SHAP values for several individual examples. The global explanation from SAGE can be calculated at the cost of just 10 local explanations, rather than requiring local explanations for every example in the dataset.</figcaption>
+        </figure>
+
+        <p>In summary, Table 1 provides a comparison between SHAP values, loss SHAP values, and SAGE values. Each of these methods is built on the Shapley value, but each one answers a different question about machine learning models.</p>
 
         <table class="table table-sm table-bordered">
-          <caption>Table 1: Comparison of SHAP values, loss SHAP values, and SAGE values. The methods answer different questions about machine learning models, but all are built on the Shapley value.</caption>
+          <caption>Table 1: Comparison of SHAP values, loss SHAP values, and SAGE values.</caption>
           <thead class="thead-light">
             <tr>
               <th class="text-center"></td>
@@ -338,31 +339,18 @@
 
         <h2>Conclusion</h2>
 
-        <p>I hope this post has given you a better understanding of Shapley values, and of SHAP and SAGE. Shapley values are pretty easy to understand outside the context of of machine learning, like with our example of a company that wants to give fair bonuses. It's natural to apply the same logic to understand machine learning models by removing subsets of features, once we do a little extra work to deal with the fact that models require fixed sets of features.</p>
+        <p>I hope this post has given you a better understanding of Shapley values, and of SHAP and SAGE. Shapley values are pretty easy to understand outside the context of of machine learning, like with our example of a company that wants to give fair bonuses. It's natural to apply the same logic to understand machine learning models, once we do a little extra work to deal with the fact that models require fixed sets of features.</p>
 
-        <p>SHAP and SAGE are both built on the Shapley value, but each answers a different kind of question about models. Interestingly, it turns out that the global explanation from SAGE can be obtained by aggregating many local explanations, although they must be loss SHAP values. We hope that this post helped you understand SHAP and SAGE better, and encourage you to try them out. SHAP's Github page is <a href="https://github.com/slundberg/shap">here</a>, and SAGE's Github page is <a href="https://github.com/icc2115/sage">here</a>.</p>
+        <p>SHAP and SAGE are both built on the Shapley value, but each method answers a different kind of question about models. I hope that this post helped you understand SHAP and SAGE better, and I encourage you to try them out! SHAP's Github page is <a href="https://github.com/slundberg/shap">here</a>, and SAGE's Github page is <a href="https://github.com/icc2115/sage">here</a>.</p>
 
         <p><strong>Summary of notation:</strong></p>
 
-        <!-- <ul>
-          <li><script type="math/tex">w</script>: the company's profitability function.</li>
-          <li><script type="math/tex">v_x</script>: the human expert's prediction given <script type="math/tex">x^S</script>. </li>
-          <li><script type="math/tex">v_{f, x}</script>: the model <script type="math/tex">f</script>'s prediction given <script type="math/tex">x^S</script> (for SHAP values).</li>
-          <li><script type="math/tex">v</script>: the human expert's prediction performance given the features <script type="math/tex">X^S</script>.</li>
-          <li><script type="math/tex">f_S</script>: a restricted model that makes predictions given <script type="math/tex">x^S</script>. (Note: for a given <script type="math/tex">f, x</script> we have <script type="math/tex">f_S(x^S) = v_{f, x}(S)</script>.)</li>
-          <li><script type="math/tex">v_f</script>: the model <script type="math/tex">f</script>'s performance (negative loss) given the features <script type="math/tex">X^S</script> (for SAGE values).</li>
-          <li><script type="math/tex">v_{f, x, y}</script>: the negative loss of <script type="math/tex">f</script>'s prediction given <script type="math/tex">x^S</script> and label <script type="math/tex">y</script> (for loss SHAP values).</li>
-        </ul> -->
         <ul>
           <li><script type="math/tex">w(S)</script>: the company's profitability function given the employee subset <script type="math/tex">S</script>.</li>
-          <!-- <li><script type="math/tex">X, Y</script>: random variables representing the input and output of a machine learning model.</li>
-          <li><script type="math/tex">x, y</script>: values for the input and output variables.</li>
-          <li><script type="math/tex">x^S</script>: a subset of the features <script type="math/tex">\{x^i \; | \; i \in S\}</script>:</li> -->
           <li><script type="math/tex">v_x(S)</script>: the human expert's prediction given the features <script type="math/tex">x^S</script>. </li>
           <li><script type="math/tex">v_{f, x}(S)</script>: the model <script type="math/tex">f</script>'s prediction given the features <script type="math/tex">x^S</script> (for SHAP values).</li>
           <li><script type="math/tex">v(S)</script>: the human expert's prediction performance given the features <script type="math/tex">X^S</script>.</li>
           <li><script type="math/tex">f_S(x^S)</script>: a restricted model's prediction given <script type="math/tex">x^S</script>. </li>
-          <!-- (Note that for a given <script type="math/tex">f, x</script> we have <script type="math/tex">f_S(x^S) = v_{f, x}(S)</script>.)</li> -->
           <li><script type="math/tex">v_f(S)</script>: the model <script type="math/tex">f</script>'s performance (negative loss) given the features <script type="math/tex">X^S</script> (for SAGE values).</li>
           <li><script type="math/tex">v_{f, x, y}(S)</script>: the negative loss of <script type="math/tex">f</script>'s prediction given <script type="math/tex">x^S</script> and label <script type="math/tex">y</script> (for loss SHAP values).</li>
         </ul>
