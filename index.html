@@ -39,11 +39,11 @@
     .top-spacing {
       padding-top: 25px;
     }
-    a {
-      color: #4b2e83;
+    #Header a {
+      color: #555555;
+      /*color: #4b2e83;*/
     }
-    a:hover {
-      color: #85754d;
+    #Header a:hover {
       text-decoration: none;
     }
     #Headshot {
@@ -60,11 +60,18 @@
       padding-right: 15px;
       padding-left: 15px;
     }
+    #Description a {
+      color: #0088DD;
+    }
+    #Description a:hover {
+      color: #85754d;
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <div class="container" id="Header">
     <div class="row top-spacing">
       <img src="images/headshot.jpg" class="mx-auto" id="Headshot">
     </div>
@@ -85,7 +92,7 @@
       <div class="mx-auto" id="Description">
         <p>I'm a Ph.D. student at the Paul G. Allen School of Computer Science & Engineering, University of Washington. I'm advised by <a href="https://suinlee.cs.washington.edu/su-in-lee">Su-In Lee</a>, and I collaborate with <a href="https://alleninstitute.org/what-we-do/brain-science/about/team/staff-profiles/uygar-sumbul/">Uygar S&uuml;mb&uuml;l</a> from the Allen Institute for Brain Science and <a href="https://scottlundberg.com">Scott Lundberg</a> from Microsoft Research.</p>
 
-        <p>My CV is <a href="CV.pdf">here<a>. I put my blog posts <a href="blog">here</a>.</p>
+        <p>My CV is <a href="CV.pdf">here</a> and I put my blog posts <a href="blog">here</a>.</p>
       </div>
     </div>
   </div>
