@@ -126,9 +126,9 @@
 
         <script type="math/tex mode=display">\Delta^{n-1} = \{x \in [0, 1]^n: \sum_{i=1}^n x_i = 1\},</script>
 
-        <p>whereas actual one-hot vectors lie on the boundary</p>
+        <p>whereas actual one-hot vectors lie at the vertices</p>
 
-        <script type="math/tex mode=display">\mathrm{Bd}(\Delta^{n-1}) = \{x \in \{0, 1\}^n: \sum_{i=1}^n x_i = 1\}.</script>
+        <script type="math/tex mode=display">\mathrm{Vert}(\Delta^{n-1}) = \{x \in \{0, 1\}^n: \sum_{i=1}^n x_i = 1\}.</script>
 
         <p>The Concrete distribution over <script type="math/tex">n</script> indices has <script type="math/tex">n + 1</script> parameters. There are <script type="math/tex">n</script> unnormalized probabilities <script type="math/tex">\alpha_1, \ldots, \alpha_n \geq 0</script> that control how likely each index is to dominate the others, and there's a temperature parameter <script type="math/tex">\lambda > 0</script> that controls the sparsity of samples.</p>
 
@@ -190,7 +190,7 @@
             </tr>
             <tr>
               <td class="align-middle text-center">Support</td>
-              <td class="align-middle text-center"><script type="math/tex">\Delta^{n-1}</script> for <script type="math/tex">\lambda > 0</script><br><script type="math/tex">\mathrm{Bd}(\Delta^{n-1})</script> for <script type="math/tex">\lambda = 0</script></td>
+              <td class="align-middle text-center"><script type="math/tex">\Delta^{n-1}</script> for <script type="math/tex">\lambda > 0</script><br><script type="math/tex">\mathrm{Vert}(\Delta^{n-1})</script> for <script type="math/tex">\lambda = 0</script></td>
               <td class="align-middle text-center"><script type="math/tex">\Delta^{n-1}</script></td>
             </tr>
             <tr>
@@ -210,7 +210,7 @@
             </tr>
           </table>
 
-          <p>The Concrete and Dirichlet have some similarities, but their differences are significant. Remark that the Gamma distribution used by the Dirichlet is well-behaved: <script type="math/tex">W_i</script> has finite mean, and all of its moments exist. By contrast, the Generalized Inverse Gamma is heavy-tailed: for low temperatures <script type="math/tex">\lambda</script>, the mean, variance, and higher modes of <script type="math/tex">V_i</script> are all undefined [5]. Intuitively, that means that empirical estimators for these quantities would never converge because the occasional <em>massive</em> samples would throw them off. So at low temperatures <script type="math/tex">\lambda \approx 0</script>, the Concrete distribution is much more likely to have individual samples <script type="math/tex">V_i</script> that make up a large proportion of the total <script type="math/tex">\sum_{k=1}^n V_k</script>, which leads to values of <script type="math/tex">X</script> near <script type="math/tex">\mathrm{Bd}(\Delta^{n-1})</script>.</p>
+          <p>The Concrete and Dirichlet have some similarities, but their differences are significant. Remark that the Gamma distribution used by the Dirichlet is well-behaved: <script type="math/tex">W_i</script> has finite mean, and all of its moments exist. By contrast, the Generalized Inverse Gamma is heavy-tailed: for low temperatures <script type="math/tex">\lambda</script>, the mean, variance, and higher modes of <script type="math/tex">V_i</script> are all undefined [5]. Intuitively, that means that empirical estimators for these quantities would never converge because the occasional <em>massive</em> samples would throw them off. So at low temperatures <script type="math/tex">\lambda \approx 0</script>, the Concrete distribution is much more likely to have individual samples <script type="math/tex">V_i</script> that make up a large proportion of the total <script type="math/tex">\sum_{k=1}^n V_k</script>, which leads to values of <script type="math/tex">X</script> near <script type="math/tex">\mathrm{Vert}(\Delta^{n-1})</script>.</p>
 
           <p>This perspective gives some intuition for why low temperatures have the effect of increasing the sparsity of Concrete samples. If you're interested, check out the derivation of these results below.</p>
 
