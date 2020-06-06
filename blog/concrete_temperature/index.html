@@ -120,9 +120,10 @@
 
         <h2>An introduction to the Concrete distribution</h2>
 
-        <p>Before saying what the Concrete distribution is, here's why it's so famous. Starting in 2013, a technique known as the <em>reparameterization trick</em> (explained <a href="https://gregorygundersen.com/blog/2018/04/29/reparameterization/">here</a>) became popular for learning distributions of random variables inside neural networks [1, 2]. Learning distributional parameters can be tricky, but these papers showed how to get an unbiased, low-variance gradient estimator using a clever sampling trick. There were other techniques before it, but the reparameterization trick's low variance made it work much better, especially for VAEs. And although the reparameterization trick is ubiquitous today, it didn't work out of the box for discrete random variables.</p>
+        <p>Before saying what the Concrete distribution is, here's why it's so famous. Starting in 2013, a technique known as the <em>reparameterization trick</em> (explained <a href="https://gregorygundersen.com/blog/2018/04/29/reparameterization/">here</a>) became popular for learning distributions of random variables inside neural networks [1, 2]. Learning distributional parameters can be tricky, but these papers showed how to get an unbiased, low-variance gradient estimator using a clever sampling trick. There were other techniques before it, but the reparameterization trick's low variance made it work much better, especially for VAEs. But unfortunately, although it worked for a variety of distributions (Gaussian, Gamma, Weibull, etc.), it didn't work out of the box for discrete random variables.</p>
+        <!-- And although the reparameterization trick is ubiquitous today, it didn't work out of the box for discrete random variables.</p> -->
 
-        <p>Then the Concrete distribution showed how to make it work. The Concrete distribution, introduced by two papers in 2016, is a <em>continuous</em> relaxation for <em>discrete</em> random variables (hence the name <em>con-crete</em>) [3, 4]. When you think about discrete random variables you probably think of the values <script type="math/tex">\{1, 2, \ldots, n\}</script>, but that set is <a href="http://www.math.wustl.edu/~freiwald/310equivalentsets6.pdf">equivalent</a> to the set of <script type="math/tex">n</script> one-hot vectors in <script type="math/tex">\mathbb{R}^n</script>. And the Concrete distribution is basically a relaxed version of a distribution over one-hot vectors. Its support is on the <script type="math/tex">n-1</script> simplex</p>
+        <p>Then the Concrete distribution showed how to make it work. The Concrete distribution, introduced by two papers in 2016, is a <em>continuous</em> relaxation for <em>discrete</em> random variables (hence the name <em>con-crete</em>) [3, 4]. When you think about discrete random variables, you probably think of a random variable with the possible values <script type="math/tex">\{1, 2, \ldots, n\}</script>, but that set is <a href="http://www.math.wustl.edu/~freiwald/310equivalentsets6.pdf">equivalent</a> to the set of <script type="math/tex">n</script> one-hot vectors in <script type="math/tex">\mathbb{R}^n</script>. And the Concrete distribution is basically a relaxed version of a distribution over one-hot vectors. Its support is on the <script type="math/tex">n-1</script> simplex</p>
 
         <script type="math/tex mode=display">\Delta^{n-1} = \{x \in [0, 1]^n: \sum_{i=1}^n x_i = 1\},</script>
 
@@ -145,7 +146,7 @@
           <figcaption class="figure-caption">Figure 1: Samples of <script type="math/tex">X \sim \mathrm{Concrete}(\alpha, \lambda)</script> for different values of <script type="math/tex">\lambda</script>, with <script type="math/tex">n = 10</script> and <script type="math/tex">\alpha_i = \frac{1}{10}</script>.</figcaption>
         </figure>
 
-        <p>As you can see, the samples get more discrete/sparse as the temperature <script type="math/tex">\lambda</script> is set to lower values. And since we usually want discrete samples, the ability to set the temperature is an important feature of the Concrete distribution.</p>
+        <p>As you can see, the samples get more discrete/sparse as the temperature <script type="math/tex">\lambda</script> is set to lower values. And since we usually want discrete samples, the ability to set the temperature is a necessary feature for working with the Concrete distribution.</p>
 
         <p>To see why the temperature has this effect, we need to consider how the Concrete relates to other random variables.</p>
 
@@ -304,9 +305,9 @@
 
         <h2>Conclusion</h2>
 
-        <p>The Concrete distribution is a powerful tool because it lets us learn the parameters of discrete distributions with the reparameterization trick, although the low temperatures necessary for truly discrete samples can make learning harder. These simulations gave us a good idea of the right range of <script type="math/tex">\lambda</script> values to use during training, by showing where the transition occurs between perfect spread and perfect sparsity.</p>
+        <p>The Concrete distribution is a powerful tool because it lets us learn the parameters of discrete distributions with the reparameterization trick, although the low temperatures that are necessary for truly discrete samples can actually make learning harder. These simulations gave us a good idea of the right range of <script type="math/tex">\lambda</script> values to use during training, by showing where the transition occurs between perfect spread and perfect sparsity.</p>
 
-        <p>According to the results in these simulations, multiplicatively annealing the temperature from <script type="math/tex">\lambda = 10.0</script> to <script type="math/tex">\lambda = 0.01</script> (as in the Concrete Autoencoders paper [7]) or even just setting <script type="math/tex">\lambda = 0.1</script> (the constant value used by L2X [6]) should be effective both for learning, and for ultimately getting discrete samples. I know that's what I'll be doing from now on.</p>
+        <p>According to the results in these simulations, multiplicatively annealing the temperature from <script type="math/tex">\lambda = 10.0</script> to <script type="math/tex">\lambda = 0.01</script> (as in the Concrete Autoencoders paper [7]) or even just setting <script type="math/tex">\lambda = 0.1</script> (the fixed value used by L2X [6]) should be effective both for learning, and for ultimately getting discrete samples. I know that's what I'll be doing from now on.</p>
 
         <h2>References</h2>
 
