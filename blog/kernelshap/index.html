@@ -195,7 +195,7 @@
         </ul>
 
         <figure class="figure text-center">
-          <img src="images/error.pdf" class="figure-img img-fluid">
+          <img src="images/error.jpg" class="figure-img img-fluid">
           <figcaption class="figure-caption text-left">Figure 1: Error decomposition (bias-variance trade-off) for original and unbiased KernelSHAP on a single census income prediction.</figcaption>
         </figure>
 
@@ -204,7 +204,7 @@
         <p>Beyond simply understanding KernelSHAP, knowing that its variance evolves at a rate of <script type="math/tex">\mathcal{O}(\frac{1}{n})</script> allows us to modify KernelSHAP with an online variance approximation. Over the course of estimation with <script type="math/tex">n</script> samples, we produce multiple independent estimates with <script type="math/tex">m</script> samples (for <script type="math/tex">m << n</script>) and use these to approximate the variance for the final results. The variance approximation can then be used to provide confidence intervals, and to automatically determine the required number of samples (rather than using an arbitrary number). Figure 2 shows what explanations look like when run with these new features.</p>
 
         <figure class="figure text-center">
-          <img src="images/examples.pdf" class="figure-img img-fluid">
+          <img src="images/examples.jpg" class="figure-img img-fluid">
           <figcaption class="figure-caption text-left">Figure 2: Shapley value-based explanations with 95% uncertainty estimates. Left: SHAP values for a single prediction with the census income dataset. Right: SAGE values for the German credit dataset.</figcaption>
         </figure>
 
