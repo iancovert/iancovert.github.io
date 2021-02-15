@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <link href="https://fonts.googleapis.com/css?family=Montserrat:300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -39,9 +40,18 @@
     .top-spacing {
       padding-top: 25px;
     }
+    .section-name {
+      margin-top: 30px;
+      margin-bottom: 20px;
+    }
+    li {
+      margin-bottom: 15px;
+    }
+    #Header {
+      margin-bottom: 100px;
+    }
     #Header a {
       color: #555555;
-      /*color: #4b2e83;*/
     }
     #Header a:hover {
       text-decoration: none;
@@ -67,6 +77,9 @@
       color: #85754d;
       text-decoration: underline;
     }
+    #Footer {
+      margin-bottom: 100px;
+    }
   </style>
 </head>
 <body>
@@ -90,11 +103,27 @@
 
     <div class="row top-spacing">
       <div class="mx-auto" id="Description">
-        <p>I'm a Ph.D. student at the Paul G. Allen School of Computer Science & Engineering, University of Washington. I'm advised by <a href="https://suinlee.cs.washington.edu/su-in-lee">Su-In Lee</a>, and I collaborate with <a href="https://scottlundberg.com">Scott Lundberg</a> from Microsoft Research and <a href="https://alleninstitute.org/what-we-do/brain-science/about/team/staff-profiles/uygar-sumbul/">Uygar S&uuml;mb&uuml;l</a> from the Allen Institute for Brain Science.</p>
+        <p>I'm a Ph.D. student at the Paul G. Allen School of Computer Science & Engineering, University of Washington. I'm fortunate to be advised by <a href="https://suinlee.cs.washington.edu/su-in-lee">Su-In Lee</a>, and I collaborate with <a href="https://scottlundberg.com">Scott Lundberg</a> from Microsoft Research and <a href="https://alleninstitute.org/what-we-do/brain-science/about/team/staff-profiles/uygar-sumbul/">Uygar S&uuml;mb&uuml;l</a> from the Allen Institute for Brain Science.</p>
+
+        <p>Previously, I worked with <a href="https://homes.cs.washington.edu/~ebfox/">Emily Fox</a> and I was a student researcher at Google Brain working with <a href="https://www.linkedin.com/in/jiening-zhan-1a6b9723">Jiening Zhan</a> and <a href="http://www.jackpo.org">Ming Jack Po</a>. Before that, I completed my Bachelor's program at Columbia University, where I did computational neuroscience research in <a href="http://www.stat.columbia.edu/~liam/">Liam Paninski</a>'s group.</p>
 
         <p>My CV is <a href="CV.pdf">here</a>, a list of my publications is <a href="publications">here</a>, and I put my blog posts <a href="blog">here</a>.</p>
+
+        <h2 class="section-name">Research</h2>
+
+        <p>My main research interest is creating explainability tools for black-box machine learning models. Besides developing theory and algorithms for these methods, I also work on applying them to problems in biology and medicine.</p>
+
+        <p>Some of my recent projects include:</p>
+
+        <ul>
+          <li><strong>SAGE</strong>, a principled approach to calculating global feature importance using Shapley values <a href="https://arxiv.org/abs/2004.00668">[paper]</a> <a href="https://github.com/iancovert/sage">[code]</a></li>
+          <li><strong>Removal-based explanations</strong>, a new class of methods that unifies 25+ model explanation approaches (including SHAP, LIME, Meaningful Perturbations, L2X, etc.) <a href="https://arxiv.org/abs/2011.14878">[paper]</a> <a href="https://github.com/iancovert/removal-explanations">[code]</a></li>
+          <li><strong>Improving KernelSHAP</strong> by developing methods for accelerating the estimation process, automatically detecting its convergence, and providing confidence intervals for the results <a href="https://arxiv.org/abs/2012.01536">[paper]</a> <a href="https://github.com/iancovert/shapley-regression">[code]</a></li>
+        </ul>
       </div>
     </div>
+
+    <!-- <div id="Footer"></div> -->
   </div>
 
 </body>
