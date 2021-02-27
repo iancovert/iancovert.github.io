@@ -18,9 +18,14 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js" integrity="sha384-/y1Nn9+QQAipbNQWU65krzJralCnuOasHncUFXGkdwntGeSvQicrYkiUBwsgUqc1" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: "Georgia";
+      font-family: "Roboto", sans-serif;
+    }
+    .author {
+      padding-right: 50px;
     }
     .navbar {
       padding-top: 26px;
@@ -124,7 +129,7 @@
 
         <p>So that's what I've tried to figure out for this post. I'll start by explaining the role of the temperature parameter through the Concrete's relationship with other random variables (namely, the Gumbel and Generalized Inverse Gamma), and then I'll run some simulations that provide practical guidance on how to set it in your models.</p>
 
-        <h2>An introduction to the Concrete distribution</h2>
+        <h2>Introduction to the Concrete distribution</h2>
 
         <p>Before saying what the Concrete distribution is, here's why it's so famous. Starting in 2013, a technique known as the <em>reparameterization trick</em> (explained <a href="https://gregorygundersen.com/blog/2018/04/29/reparameterization/">here</a>) became popular for learning distributions of random variables inside neural networks [1, 2]. Learning distributional parameters can be tricky, but these papers showed how to get an unbiased, low-variance gradient estimator using a clever sampling trick. There were other techniques before it, but the reparameterization trick's low variance made it work much better, especially for VAEs. But unfortunately, although it worked for a variety of distributions (Gaussian, Gamma, Weibull, etc.), it didn't work out-of-the-box for discrete random variables.</p>
 
@@ -160,13 +165,13 @@
 
           <script type="math/tex mode=display">X_i = \frac{e^{(\log \alpha_i  - \log (- \log U_i))/\lambda}}{\sum_{k=1}^n e^{(\log \alpha_k  - \log (- \log U_k))/\lambda}}</script>
 
-          <p>This is how we typically sample from the Concrete distribution in practice. But admittedly, the expression above isn't very intuitive.</p></li>
+          <p>This is how we typically sample from the Concrete distribution in practice. But the expression above isn't very intuitive.</p></li>
 
           <li><p>In terms of independent Gumbel samples <script type="math/tex">G_i \sim \mathrm{Gumbel}(0, 1)</script>, the random variable <script type="math/tex">X \sim \mathrm{Concrete}(\alpha, \lambda)</script> has dimensions <script type="math/tex">X_1, \ldots, X_n</script> equal to</p>
 
           <script type="math/tex mode=display">X_i = \frac{e^{(\log \alpha_i + G_i)/\lambda}}{\sum_{k=1}^n e^{(\log \alpha_k + G_k) / \lambda}}</script>
 
-          <p>or <script type="math/tex">X = \mathrm{softmax}(\frac{\log \alpha_1 + G_1}{\lambda}, \ldots, \frac{\log \alpha_n + G_n}{\lambda})</script>. This is what gives the Concrete distribution its other name, the "Gumbel-softmax distribution" [4]. And you can see that a low temperature <script type="math/tex">\lambda</script> would amplify the differences between the softmax arguments and lead to a one-hot vector.</p></li>
+          <p>or <script type="math/tex">X = \mathrm{softmax}(\frac{\log \alpha_1 + G_1}{\lambda}, \ldots, \frac{\log \alpha_n + G_n}{\lambda})</script>. This is what gives the Concrete distribution its other name, the <em>Gumbel-softmax distribution</em> [4]. And you can see that a low temperature <script type="math/tex">\lambda</script> would amplify the differences between the softmax arguments and lead to a one-hot vector.</p></li>
 
           <li><p>An interpretation that I find even simpler is that <script type="math/tex">X \sim \mathrm{Concrete}(\alpha, \lambda)</script> has dimensions <script type="math/tex">X_1, \ldots, X_n</script> equal to</p>
 
@@ -216,7 +221,7 @@
             </tr>
           </table>
 
-          <p>The Concrete and Dirichlet distributions have some similarities, but their differences are significant. Remark that the Gamma distribution used by the Dirichlet is well-behaved: <script type="math/tex">W_i</script> has finite mean, and all of its moments exist. By contrast, the Generalized Inverse Gamma is heavy-tailed: for low temperatures <script type="math/tex">\lambda</script>, the mean, variance, and higher moments of <script type="math/tex">V_i</script> are all undefined [5]. Intuitively, that means that empirical estimators for these quantities would never converge because the occasional <em>massive</em> samples would throw them off. So at low temperatures <script type="math/tex">\lambda \approx 0</script>, the Concrete distribution is much more likely to have individual samples <script type="math/tex">V_i</script> that make up a large proportion of the total <script type="math/tex">\sum_{k=1}^n V_k</script>, which leads to values of <script type="math/tex">X</script> near <script type="math/tex">\mathrm{Vert}(\Delta^{n-1})</script>.</p>
+          <p>The Concrete and Dirichlet distributions have some similarities, but their differences are significant. The Gamma distribution used by the Dirichlet is well-behaved: <script type="math/tex">W_i</script> has finite mean, and all of its moments exist. By contrast, the Generalized Inverse Gamma is heavy-tailed: for low temperatures <script type="math/tex">\lambda</script>, the mean, variance, and higher moments of <script type="math/tex">V_i</script> are all undefined [5]. Intuitively, that means that empirical estimators for these quantities would never converge because the occasional <em>massive</em> samples would throw them off. So at low temperatures <script type="math/tex">\lambda \approx 0</script>, the Concrete distribution is much more likely to have individual samples <script type="math/tex">V_i</script> that make up a large proportion of the total <script type="math/tex">\sum_{k=1}^n V_k</script>, which leads to values of <script type="math/tex">X</script> near <script type="math/tex">\mathrm{Vert}(\Delta^{n-1})</script>.</p>
 
           <p>This perspective gives some intuition for why low temperatures have the effect of increasing the sparsity of Concrete samples. If you're interested, check out the derivation of these results below.</p>
 
@@ -259,7 +264,7 @@
 
         <script type="math/tex mode=display">\lim_{\lambda \rightarrow \infty} X_\lambda = (\frac{1}{n}, \ldots, \frac{1}{n}).</script>
 
-        <p>This seems intuitive when you think about the "Gumbel-softmax" sampling trick, because a large temperature wipes out any differences between the arguments to the softmax.</p>
+        <p>This seems intuitive when you think about the <em>Gumbel-softmax</em> sampling trick, because a large temperature wipes out any differences between the arguments to the softmax.</p>
 
         <p><strong>Low temperature</strong></p>
 
@@ -267,7 +272,7 @@
 
         <script type="math/tex mode=display">P(\lim_{\lambda \rightarrow 0} X_i = 1) = \frac{\alpha_i}{\sum_{k=1}^n \alpha_k}.</script>
 
-        <p>Again, the increasing sparsity of the samples seems obvious when you consider the role of the temperature in the softmax. And the fact that the probability of <script type="math/tex">X_i</script> dominating the other indices is equal to <script type="math/tex">\alpha_i / \sum_{k=1}^n \alpha_k</script> is the magic of the Gumbel-max trick (which predates the Gumbel-softmax trick by several decades).</p>
+        <p>Again, the increasing sparsity of the samples seems obvious when you consider the role of the temperature in the softmax. The fact that the probability of <script type="math/tex">X_i</script> dominating the other indices is equal to <script type="math/tex">\alpha_i / \sum_{k=1}^n \alpha_k</script> is the magic of the Gumbel-max trick (which predates the Gumbel-softmax trick by several decades). Ryan Adams has a simple proof of this fact <a href="https://lips.cs.princeton.edu/the-gumbel-max-trick-for-discrete-distributions/">here</a>.</p>
 
         <p><strong>An easy choice?</strong></p>
 
@@ -278,7 +283,7 @@
           <figcaption class="figure-caption">Figure 2: The tradeoff with the temperature parameter <script type="math/tex">\lambda</script>.</figcaption>
         </figure>
 
-        <p>To deal with the tradeoff, some papers have used a carefully chosen fixed value of <script type="math/tex">\lambda</script> [6], while others have annealed <script type="math/tex">\lambda</script> from a high value to a low value [7]. I actually like the idea of annealing, because you can pass through a region of high <script type="math/tex">\lambda</script> that's suitable for learning while eventually ending up with discrete samples. Learning will get harder as <script type="math/tex">\lambda</script> gets closer to zero, but you should end up with a good solution for <script type="math/tex">\lambda</script> if you pre-solve the problem for a slightly larger <script type="math/tex">\lambda'</script>.</p>
+        <p>To deal with the tradeoff, some papers have used a carefully chosen fixed value of <script type="math/tex">\lambda</script> [6], while others have annealed <script type="math/tex">\lambda</script> from a high value to a low value [7]. I like the idea of annealing, because you can pass through a region of high <script type="math/tex">\lambda</script> that's suitable for learning while eventually ending up with discrete samples. Learning will get harder as <script type="math/tex">\lambda</script> gets closer to zero, but you should end up with a good solution for <script type="math/tex">\lambda</script> if you pre-solve the problem for a slightly larger <script type="math/tex">\lambda'</script>.</p>
 
         <p>So annealing seems like a good idea, but to do it, we still need to figure out a range of values that makes sense.</p>
 
@@ -286,13 +291,13 @@
 
         <p>What does it mean to choose the <em>right</em> temperature value? We want a large enough temperature to enable learning, but we also want a low enough temperature to get discrete samples. That's why annealing from a high value to a low value is a nice idea, because we can get the best of both worlds. We know how the Concrete distribution behaves when <script type="math/tex">\lambda \rightarrow \infty</script> or <script type="math/tex">\lambda \rightarrow 0</script>, and we want to pass between these two regimes when we anneal <script type="math/tex">\lambda</script>. The question is where the transition occurs.</p>
 
-        <p>To figure this out, I tried to derive a mathematical function to describe the sparsity of Concrete samples as a function of <script type="math/tex">\alpha</script> and <script type="math/tex">\lambda</script>. Sadly, this turned out to be very hard. My plan was to quantify the sparsity of single samples though their entropy, or the value of the maximum index, and then figure out what that quantity was in expectation. It turns out that the <em>inverse</em> of the maximum index <script type="math/tex">M^{-1} = (\max_i X_i)^{-1}</script> is a bit easier to characterize, but figuring out <script type="math/tex">\mathbb{E}[M^{-1}]</script> was <em>still</em> too hairy. Maybe someone else will figure it out one day.</p>
+        <p>To figure this out, I tried to derive a mathematical function to describe the sparsity of Concrete samples as a function of <script type="math/tex">\alpha</script> and <script type="math/tex">\lambda</script>. Sadly, this turned out to be very hard. My plan was to quantify the sparsity of single samples though their entropy, or the value of the maximum index, and then figure out what that quantity was in expectation. It turns out that the <em>inverse</em> of the maximum index <script type="math/tex">M^{-1} = (\max_i X_i)^{-1}</script> is a bit easier to characterize, but figuring out <script type="math/tex">\mathbb{E}[M^{-1}]</script> was still too hairy. Maybe someone else will figure it out one day.</p>
 
-        <p>Until then, we can fall back on simulations. The idea is to consider different values of <script type="math/tex">n</script> and <script type="math/tex">\lambda</script> to see how the sparsity of Concrete samples changes. Of course we should also look at different values of <script type="math/tex">\alpha</script>, but it seems obvious that letting <script type="math/tex">\alpha = (\frac{1}{n}, \ldots, \frac{1}{n})</script> will lead to the most spread out samples, so we'll just look at this "balanced" setting, plus one "imbalanced" setting where <script type="math/tex">\alpha_1 = 0.9</script> and the rest are <script type="math/tex">\alpha_2 = \ldots = \alpha_n = \frac{0.1}{n - 1}</script>.</p>
+        <p>Until then, we can fall back on a simulation study. The idea is to consider different values of <script type="math/tex">n</script> and <script type="math/tex">\lambda</script> to see how the sparsity of Concrete samples changes. Of course we should also look at different values of <script type="math/tex">\alpha</script>, but it seems obvious that letting <script type="math/tex">\alpha = (\frac{1}{n}, \ldots, \frac{1}{n})</script> will lead to the most spread out samples, so we'll just look at this "balanced" setting, plus one "imbalanced" setting where <script type="math/tex">\alpha_1 = 0.9</script> and the rest are <script type="math/tex">\alpha_2 = \ldots = \alpha_n = \frac{0.1}{n - 1}</script>.</p>
 
         <p>We'll use two quantities to measure sparsity. First, we'll look at the average entropy of samples, <script type="math/tex">\mathbb{E}[H(x)]</script>, by which I mean the entropy in the discrete random variable <script type="math/tex">Y \sim \mathrm{Categorical}(x)</script>. And second, we'll look at the expected value of the max index, <script type="math/tex">\mathbb{E}[M] = \mathbb{E}[\max_i X_i]</script>.</p>
 
-        <p>I estimated each of these quantities for 100 different temperature values using a million samples, and the results demonstrate exactly what we want to see. The transition between perfect spread and perfect sparsity happens between <script type="math/tex">\lambda = 10.0</script> and <script type="math/tex">\lambda = 0.01</script> for a wide range of numbers of indices (<script type="math/tex">n \in \{10, 100, 1{,}000, 10{,}000\}</script>).</p>
+        <p>I estimated each of these quantities for 100 different temperature values using a million samples, and the results demonstrate exactly what we want to see. The transition between perfect spread and perfect sparsity happens between <script type="math/tex">\lambda = 10.0</script> and <script type="math/tex">\lambda = 0.01</script> for a wide range of numbers of indices <script type="math/tex">n \in \{10, 100, 1{,}000, 10{,}000\}</script>.</p>
 
         <p>Figure 3 shows that the mean entropy starts out high and then goes to zero, and we start getting sparse samples without having to resort to extremely low temperatures. Even for large values of <script type="math/tex">n</script> and balanced parameters, the samples have almost no entropy with <script type="math/tex">\lambda = 0.1</script>. And when the parameters are imbalanced, we can get sparse samples with even higher temperatures.</p>
 
@@ -312,7 +317,7 @@
 
         <h2>Conclusion</h2>
 
-        <p>The Concrete distribution is a powerful tool because it lets us learn the parameters of discrete distributions with the reparameterization trick, although the low temperatures that are necessary for truly discrete samples can make learning harder. These simulations gave us a good idea of the right range of <script type="math/tex">\lambda</script> values to use during training, by showing where the transition occurs between perfect spread and perfect sparsity.</p>
+        <p>The Concrete distribution is a powerful tool because it lets us learn the parameters of discrete distributions with the reparameterization trick, but the low temperatures that are necessary for truly discrete samples can make learning harder. These simulations gave us a good idea of the right range of <script type="math/tex">\lambda</script> values to use during training by showing where the transition occurs between perfect spread and perfect sparsity.</p>
 
         <p>According to the results in these simulations, multiplicatively annealing the temperature from <script type="math/tex">\lambda = 10.0</script> to <script type="math/tex">\lambda = 0.01</script> (as in the Concrete Autoencoders paper [7]) or even just setting <script type="math/tex">\lambda = 0.1</script> (the fixed value used by L2X [6]) should be effective both for learning, and for ultimately getting discrete samples. That's what I'll be doing from now on.</p>
 
@@ -344,7 +349,7 @@
   <!-- Disqus embedding script -->
   <script>
     var disqus_config = function () {
-      this.page.url = 'https://iancovert.com';
+      this.page.url = 'https://iancovert.com/blog/concrete_temperature/';
       this.page.identifier = 'concrete_temperature';
     };
     (function() {

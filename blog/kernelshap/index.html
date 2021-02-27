@@ -18,9 +18,14 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js" integrity="sha384-/y1Nn9+QQAipbNQWU65krzJralCnuOasHncUFXGkdwntGeSvQicrYkiUBwsgUqc1" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: "Georgia";
+      font-family: "Roboto", sans-serif;
+    }
+    .author {
+      padding-right: 50px;
     }
     .navbar {
       padding-top: 26px;
@@ -120,27 +125,40 @@
         </div>
         <hr>
 
-        <p>KernelSHAP is a popular implementation of SHAP, but it has several shortcomings that make it difficult to use in practice. In our recent <a href="https://arxiv.org/abs/2012.01536">paper</a> [1], we revisited the regression-based approach for estimating Shapley values to better understand and ultimately improve upon KernelSHAP.</p>
+        <p>KernelSHAP is a popular implementation of SHAP, but it has several shortcomings that make it difficult to use in practice. In our recent <a href="https://arxiv.org/abs/2012.01536"> AISTATS paper</a> [1], we revisited the regression-based approach for estimating Shapley values to better understand and ultimately improve upon KernelSHAP.</p>
 
-        <p>Our focus was making Shapley value estimation more practical, and we did so by developing techniques for (i) providing uncertainty estimates, (ii) detecting convergence automatically, (iii) accelerating convergence, and (iv) generalizing KernelSHAP to other Shapley value-based explanation methods. The goal of this post is to describe our paper at a high level (without so much math).</p>
+        <!-- <p>Our focus was making Shapley value estimation more practical, and we did so by developing techniques for (i) providing uncertainty estimates, (ii) detecting convergence automatically, (iii) accelerating convergence, and (iv) generalizing KernelSHAP to other Shapley value-based explanation methods. This post describes our paper at a high level, while avoiding some of the mathematical details.</p> -->
+
+        <p>Our goal was making Shapley value estimation more practical, and we did so by developing techniques for:</p>
+
+        <ol type="i">
+          <li>Providing uncertainty estimates</li>
+          <li>Detecting convergence automatically</li>
+          <li>Accelerating convergence</li>
+          <li>Generalizing KernelSHAP to other Shapley value-based explanation methods</li>
+        </ol>
+
+        <p>This post describes our paper at a high level, while avoiding some of the mathematical details.</p>
 
         <h2>Background</h2>
 
-        <p>First, let's review the differences between KernelSHAP, SHAP and Shapley values. (If you're unfamiliar with cooperative games or Shapley values, check out <a href="/blog/understanding-shap-sage">this post</a>.) Shapley values are a credit allocation scheme for cooperative games (i.e., set functions) [2], and given a game <script type="math/tex">v</script> that accepts coalitions/subsets <script type="math/tex">S \subseteq D \equiv \{1, 2, \ldots d\}</script>, the Shapley values for each player <script type="math/tex">i \in D</script> are defined as follows:</p>
+        <p>First, let's review the differences between KernelSHAP, SHAP and Shapley values. (If you're unfamiliar with cooperative games or Shapley values, check out <a href="/blog/understanding-shap-sage">this post</a>.)</p>
+
+        <p>Shapley values are a credit allocation scheme for <em>cooperative games</em> (i.e., set functions) [2], and, given a game <script type="math/tex">v</script> that accepts coalitions/subsets <script type="math/tex">S \subseteq D \equiv \{1, 2, \ldots d\}</script>, the Shapley values for each player <script type="math/tex">i \in D</script> are defined as follows:</p>
 
         <script type="math/tex mode=display">\phi_i(v) = \frac{1}{d} \sum_{S \subseteq D \setminus\{i\}} \binom{d - 1}{|S|}^{-1} \big[v(S \cup \{i\}) - v(S)\big].</script>
 
-        <p>Next, SHAP is an interpretability method that explains individual predictions by assigning scores to each feature <script type="math/tex">x_i</script> using Shapley values [3]. Given a model <script type="math/tex">f</script> and an input <script type="math/tex">x</script>, SHAP is based on a cooperative game <script type="math/tex">v_x</script> defined as follows (when using the conditional distribution for missing features):</p>
+        <p>Next, SHAP is an interpretability method that explains individual predictions by assigning attribution scores to each feature <script type="math/tex">x_i</script> using Shapley values [3]. Given a model <script type="math/tex">f</script> and an input <script type="math/tex">x</script>, SHAP is based on a cooperative game <script type="math/tex">v_x</script> defined as follows (when using the conditional distribution for missing features):</p>
 
         <script type="math/tex mode=display">v_x(S) = \mathbb{E}[f(X) | X_S = x_S].</script>
 
-        <p>SHAP values (the feature attribution scores) are the Shapley values <script type="math/tex">\phi_i(v_x)</script>. Because of how Shapley values are derived, SHAP values represent how much each feature moves the prediction <script type="math/tex">f(x)</script> up or down relative to the base-rate prediction <script type="math/tex">\mathbb{E}[f(X)]</script>.</p>
+        <p>SHAP values are feature attribution scores given by the Shapley values <script type="math/tex">\phi_i(v_x)</script>. Because of how Shapley values are derived, SHAP values represent how much each feature moves the prediction <script type="math/tex">f(x)</script> up or down relative to the base-rate prediction <script type="math/tex">\mathbb{E}[f(X)]</script>.</p>
 
-        <p>Finally, KernelSHAP is a method for approximating SHAP values [3]. Shapley values are hard to calculate, so SHAP is merely a theoretical method without a practical approximation. KernelSHAP is often thought of as the main practical implementation of SHAP, and since the features' conditional distributions are often unknown, KernelSHAP is typically run with a slightly different cooperative game (that uses the marginal distribution for missing features):
+        <p>Finally, KernelSHAP is a method for approximating SHAP values [3]. Shapley values are hard to calculate, so SHAP is only useful in theory without an approximation technique. KernelSHAP is the main practical implementation of SHAP, and since the features' conditional distributions are often unknown, KernelSHAP is typically run with a slightly different cooperative game that uses the marginal distribution for missing features:
 
         <script type="math/tex mode=display">v_x(S) = \mathbb{E}[f(x_S, X_{\bar S})].</script>
 
-        <p>Below, Table 1 summarizes these three related methods.</p>
+        <p>Table 1 summarizes these three related ideas.</p>
 
         <table class="table table-sm table-bordered">
           <caption>Table 1: Shapley values, SHAP and KernelSHAP.</caption>
@@ -170,7 +188,7 @@
           </tbody>
         </table>
 
-        <p>KernelSHAP has become the preferred method for model-agnostic SHAP value calculation [3], but recent work has exposed certain weaknesses in KernelSHAP. For example, Merrick and Taly [4] raised questions about whether KernelSHAP is an unbiased estimator (or a statistical estimator in any sense), and the SAGE paper [5] showed that sampling-based approximations permit convergence detection and uncertainty estimation, whereas KernelSHAP offers neither. These are some of the issues we aim to address in our paper, "Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression" [1].</p>
+        <p>KernelSHAP has become the preferred method for model-agnostic SHAP value calculation [3], but recent work has exposed certain weaknesses in KernelSHAP. For example, Merrick and Taly [4] raised questions about whether KernelSHAP is an unbiased estimator (or a statistical estimator in any sense), and the SAGE paper [5] showed that sampling-based approximations permit convergence detection and uncertainty estimation, whereas KernelSHAP offers neither. These are some of the issues we address in our paper, "Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression" [1].</p>
 
         <h2>KernelSHAP</h2>
 
@@ -178,18 +196,19 @@
 
         <script type="math/tex mode=display">\min_{\phi_0, \ldots, \phi_d} \sum_{S \subseteq D} \mu_{\text{Sh}}(S) \Big( \phi_0 + \sum_{i \in S} \phi_i - v(S) \Big)^2</script>
 
-        <p>where the weighting kernel <script type="math/tex">\mu_{\text{Sh}}</script> is given by:</p>
+        <p>where the weighting function <script type="math/tex">\mu_{\text{Sh}}</script> is given by:</p>
 
         <script type="math/tex mode=display">\mu_{\text{Sh}}(S) = \frac{d - 1}{\binom{d}{|S|}|S|(d - |S|)}.</script>
 
-        <p>Solving such problems is usually easy, but this one is difficult because it has <script type="math/tex">2^d</script> data points <script type="math/tex">\big(S, v(S)\big)</script>, each of which may be costly to calculate. KernelSHAP therefore uses a "dataset sampling" approach (described in detail in our paper) that involves solving a constrained least squares problem with a manageable number of data points. I'll omit the math here, but this problem can be solved without much difficulty using its KKT conditions.</p>
+        <p>Solving weighted least squares problems is usually easy, but this one is difficult because it has <script type="math/tex">2^d</script> input-output pairs (or data points) <script type="math/tex">\big(S, v(S)\big)</script>, each of which may be costly to calculate. KernelSHAP therefore uses a <em>dataset sampling</em> approach (described in detail in our paper) that involves solving a constrained least squares problem with a manageable number of data points. I'll omit the equations here, but this problem can be solved without much difficulty using its KKT conditions.</p>
 
-        <p>This describes KernelSHAP at a high level. It's worth mentioning, however, that KernelSHAP need not be used in the context of SHAP: the equations above are not specific to the game used by SHAP (<script type="math/tex">v_x</script>), so this regression-based approach can be applied to <em>any cooperative game</em>. (We will continue to use the term <em>KernelSHAP</em>, but we now mean the regression-based approach to approximating Shapley values.)</p>
+        <p>This describes KernelSHAP at a high level. It's worth mentioning, however, that KernelSHAP need not be used in the context of SHAP: the equations above are not specific to the game used by SHAP (<script type="math/tex">v_x</script>), so this regression-based approach can be applied to <em>any cooperative game</em>. (We will continue to use the name <em>KernelSHAP</em>, but we now mean the regression-based approach to approximating Shapley values.)</p>
 
         <p>KernelSHAP is simple to implement, but its properties were unknown until now. As prior work pointed out, it's not obvious in what sense the dataset sampling approach even represents a statistical estimator. In our paper, we improved our understanding of KernelSHAP by discovering the following properties:</p>
 
         <ul>
-          <li>KernelSHAP is a consistent Shapley value estimator with negligible bias.</li>
+          <li>KernelSHAP is a consistent Shapley value estimator.</li>
+          <li>KernelSHAP has negligible bias.</li>
           <li>KernelSHAP has significantly lower variance than our newly proposed <em>unbiased KernelSHAP</em> estimator. The new estimator has the advantage of being provably unbiased, but the original approach appears to make a more favorable bias-variance trade-off (see Figure 1).</li>
           <li>KernelSHAP's variance evolves at a rate of <script type="math/tex">\mathcal{O}(\frac{1}{n})</script> with the number of sampled data points, identical to the unbiased KernelSHAP estimator.</li>
         </ul>
@@ -199,9 +218,9 @@
           <figcaption class="figure-caption text-left">Figure 1: Error decomposition (bias-variance trade-off) for original and unbiased KernelSHAP on a single census income prediction.</figcaption>
         </figure>
 
-        <p>Given these properties, the original KernelSHAP approach seems preferable to our provably unbiased estimator (described in the paper). The dataset sampling approach is not provably unbiased, but because it converges faster and its variance is empirically near zero, most users should prefer this approach in practice.</p>
+        <p>Given these properties, the original KernelSHAP approach seems preferable to our provably unbiased estimator (described in the paper). The dataset sampling approach is not provably unbiased, but because it converges faster and its variance is empirically near zero, users should prefer this approach in practice.</p>
 
-        <p>Beyond simply understanding KernelSHAP, knowing that its variance evolves at a rate of <script type="math/tex">\mathcal{O}(\frac{1}{n})</script> allows us to modify KernelSHAP with an online variance approximation. Over the course of estimation with <script type="math/tex">n</script> samples, we produce multiple independent estimates with <script type="math/tex">m</script> samples (for <script type="math/tex">m << n</script>) and use these to approximate the variance for the final results. The variance approximation can then be used to provide confidence intervals, and to automatically determine the required number of samples (rather than using an arbitrary number). Figure 2 shows what explanations look like when run with these new features.</p>
+        <p>Beyond improving our understanding of KernelSHAP, knowing that its variance evolves at a rate of <script type="math/tex">\mathcal{O}(\frac{1}{n})</script> allows us to modify KernelSHAP with an online variance approximation. Over the course of estimation with <script type="math/tex">n</script> samples, we produce multiple independent estimates with <script type="math/tex">m</script> samples (for <script type="math/tex">m << n</script>) and use these to approximate the variance for the final results. The variance approximation can then be used to provide confidence intervals, and to automatically determine the required number of samples (rather than using an arbitrary number or the default argument). Figure 2 shows what explanations look like when run with these new modifications.</p>
 
         <figure class="figure text-center">
           <img src="images/examples.jpg" class="figure-img img-fluid">
@@ -211,20 +230,20 @@
         <p>Finally, our paper presented two more innovations for KernelSHAP:</p>
 
         <ol>
-          <li>We presented a <em>paired sampling</em> approach that accelerates KernelSHAP's convergence. The technique is simple: each sampled subset <script type="math/tex">S \subseteq D</script> is paired with the complement subset <script type="math/tex">D \setminus S</script>. In most cases, this approach significantly reduces the variance for the original KernelSHAP, enabling it to converge roughly <script type="math/tex">10\times</script> faster on four datasets examined in our experiments.</li>
-          <li>We adapted KernelSHAP to the setting of <em>stochastic cooperative games</em> to develop fast estimators for two global explanation methods, SAGE [5] and Shapley Effects [6]. Stochastic cooperative games have not previously been used in the model explanation literature, but we find that these tools provide a helpful perspective for framing these methods. The estimators we introduce are significantly faster than baselines in our experiments.</li>
+          <li>We presented a <em>paired sampling</em> approach that accelerates KernelSHAP's convergence. The technique is simple: each sampled subset <script type="math/tex">S \subseteq D</script> is paired with the complement subset <script type="math/tex">D \setminus S</script>. In most cases, this approach significantly reduces the variance for the original KernelSHAP, enabling it to converge roughly <script type="math/tex">10\times</script> faster on the four datasets examined in our experiments.</li>
+          <li>We adapted KernelSHAP to the setting of <em>stochastic cooperative games</em> to develop fast estimators for two global explanation methods, SAGE [5] and Shapley Effects [6]. Stochastic cooperative games have not previously been used in the model explanation literature, but we find that these tools provide a helpful way of re-framing these methods and deriving fast estimators. The approximation approach we introduce is significantly faster than baselines in our experiments.</li>
         </ol>
 
-        <p>With these new insights and tools, we hope to provide users with a more practical approach to Shapley value estimation via linear regression. Shapley values still aren't cheap to calculate (relative to certain other methods), but you can now calculate them faster and know that you're using an appropriate number of samples.</p>
+        <p>With these new insights and tools, we hope to provide users with a more practical approach to Shapley value estimation via linear regression. Shapley values still aren't cheap to calculate relative to certain other methods, but you can now calculate them faster and be confident that you're using the right number of samples.</p>
 
         <h2>Conclusion</h2>
 
-        <p>Shapley values are used by several promising model explanation methods (SHAP, SAGE, Shapley Effects, etc.), but fast approximations are required to use these methods in practice. Our paper develops a practical approach using a linear regression-based estimator, providing features such as uncertainty estimatation and automatic convergence detection. If you want to try out our approach, our implementation is <a href="https://github.com/iancovert/shapley-regression">online</a> and you can apply it with model explanation methods (such as SHAP) or with arbitrary cooperative games.</p>
+        <p>Shapley values are used by several promising model explanation methods (SHAP, SAGE, Shapley Effects, etc.), but fast approximations are required to use these methods in practice. Our paper develops a practical approach using a linear regression-based estimator, providing features like uncertainty estimatation and automatic convergence detection. If you want to try out our approach, our implementation is <a href="https://github.com/iancovert/shapley-regression">online</a> and you can apply it with model explanation methods (such as SHAP) or with arbitrary cooperative games.</p>
 
         <h2>References</h2>
 
         <ol>
-          <li>Ian Covert, Su-In Lee. "Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression." <em>arXiv preprint arXiv:2012.01536, 2020.</em></li>
+          <li>Ian Covert, Su-In Lee. "Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression." <em>Artificial Intelligence and Statistics, 2021.</em></li>
           <li>Lloyd Shapley. "A Value for n-Person Games." <em>Contributions to the Theory of Games, 1953.</em></li>
           <li>Scott Lundberg, Su-In Lee. "A Unified Approach to Interpreting Model Predictions." <em>Neural Information Processing Systems, 2017.</em></li>
           <li>Luke Merrick, Ankur Taly. "The Explanation Game: Explaining Machine Learning Models Using Shapley Values." <em>CD-Make 2020.</em></li>
@@ -248,8 +267,8 @@
   <!-- Disqus embedding script -->
   <script>
     var disqus_config = function () {
-      this.page.url = 'https://iancovert.com';
-      this.page.identifier = 'concrete_temperature';
+      this.page.url = 'https://iancovert.com/blog/kernelshap/';
+      this.page.identifier = 'improving-kernelshap';
     };
     (function() {
     var d = document, s = d.createElement('script');
