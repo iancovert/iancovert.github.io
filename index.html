@@ -35,7 +35,7 @@
   </script>
   <style>
     body {
-      font-family: "Montserrat";
+      font-family: "Montserrat", sans-serif;
     }
     .top-spacing {
       padding-top: 25px;
@@ -47,38 +47,47 @@
     li {
       margin-bottom: 15px;
     }
+    a {
+      color: #0088DD;
+    }
+    a:hover {
+      color: #85754d;
+      text-decoration: underline;
+    }
     #Header {
       margin-bottom: 100px;
-    }
-    #Header a {
-      color: #555555;
-    }
-    #Header a:hover {
-      text-decoration: none;
     }
     #Headshot {
       height: 250px;
       border-radius: 7px;
     }
-    #Icons a {
+    #Icons a, #Name a {
       display: inline-block;
       margin-right: 20px;
       margin-left: 20px;
+      color: #555555;
+    }
+    #Icons a:hover, #Name a:hover {
+      color: #555555;
+      text-decoration: none;
     }
     #Description {
       max-width: 680px;
       padding-right: 15px;
       padding-left: 15px;
     }
-    #Description a {
-      color: #0088DD;
+    .btn-primary {
+      min-width: 150px;
+      color: #FFFFFF;
+      background-color: #555555;
+      border-width: 0px;
+      transition: 0s;
     }
-    #Description a:hover {
-      color: #85754d;
-      text-decoration: underline;
-    }
-    #Footer {
-      margin-bottom: 100px;
+    .btn-primary:hover {
+      background-color: #0088DD;
+      color: #FFFFFF;
+      text-decoration: none;
+      transition: 0s;
     }
   </style>
 </head>
@@ -88,7 +97,7 @@
     <div class="row top-spacing">
       <img src="images/headshot.jpg" class="mx-auto" id="Headshot">
     </div>
-    <div class="row top-spacing">
+    <div id="Name" class="row top-spacing">
       <a href="/" class="mx-auto"><h1 class="display-4">Ian C. Covert</h1></a>
     </div>
 
@@ -103,11 +112,15 @@
 
     <div class="row top-spacing">
       <div class="mx-auto" id="Description">
-        <p>I'm a Ph.D. student at the Paul G. Allen School of Computer Science & Engineering, University of Washington. I'm fortunate to be advised by <a href="https://suinlee.cs.washington.edu/su-in-lee">Su-In Lee</a>, and I collaborate with <a href="https://scottlundberg.com">Scott Lundberg</a> from Microsoft Research and <a href="https://alleninstitute.org/what-we-do/brain-science/about/team/staff-profiles/uygar-sumbul/">Uygar S&uuml;mb&uuml;l</a> from the Allen Institute for Brain Science.</p>
+        <p>I'm a Ph.D. student in the Paul G. Allen School of Computer Science & Engineering at the University of Washington, where I'm fortunate to be advised by <a href="https://suinlee.cs.washington.edu/su-in-lee">Su-In Lee</a>. I also collaborate with <a href="https://scottlundberg.com">Scott Lundberg</a> from Microsoft Research and <a href="https://alleninstitute.org/what-we-do/brain-science/about/team/staff-profiles/uygar-sumbul/">Uygar S&uuml;mb&uuml;l</a> from the Allen Institute for Brain Science.</p>
 
         <p>Previously, I worked with <a href="https://homes.cs.washington.edu/~ebfox/">Emily Fox</a> and was a student researcher at Google Brain working with <a href="https://www.linkedin.com/in/jiening-zhan-1a6b9723">Jiening Zhan</a> and <a href="http://www.jackpo.org">Ming Jack Po</a>. Before that, I completed my Bachelor's program at Columbia University, where I did computational neuroscience research in <a href="http://www.stat.columbia.edu/~liam/">Liam Paninski</a>'s group.</p>
 
-        <p>My CV is <a href="CV.pdf">here</a>, a list of my publications is <a href="publications">here</a>, and I put my blog posts <a href="blog">here</a>.</p>
+        <div id="Buttons" class="text-center">
+          <a href="CV.pdf" class="btn btn-primary" role="button">CV</a>
+          <a href="publications" class="btn btn-primary" role="button">Publications</a>
+          <a href="blog" class="btn btn-primary" role="button">Blog</a>
+        </div>
 
         <h2 class="section-name">Research</h2>
 
@@ -122,8 +135,6 @@
         </ul>
       </div>
     </div>
-
-    <!-- <div id="Footer"></div> -->
   </div>
 
 </body>
