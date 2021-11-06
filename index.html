@@ -58,7 +58,7 @@
       margin-bottom: 100px;
     }
     #Headshot {
-      height: 200px;
+      height: 250px;
       border-radius: 7px;
     }
     #Icons a, #Name a {
@@ -91,13 +91,21 @@
       text-decoration: none;
       transition: 0s;
     }
+    .project-photo {
+      max-width: 90%;
+      display: block;
+      margin-left: auto;
+      margin-top:  30px;
+      margin-bottom: 60px;
+      margin-right: auto;
+    }
   </style>
 </head>
 <body>
 
   <div class="container" id="Header">
     <div class="row top-spacing">
-      <img src="images/headshot.jpg" class="mx-auto" id="Headshot">
+      <img src="images/headshot2.jpg" class="mx-auto" id="Headshot">
     </div>
     <div id="Name" class="row top-spacing">
       <a href="/" class="mx-auto"><h1 class="display-4">Ian C. Covert</h1></a>
@@ -121,20 +129,31 @@
         <div class="text-center">
           <a href="publications" class="btn btn-primary" role="button">Publications</a>
           <a href="blog" class="btn btn-primary" role="button">Blog</a>
-          <a href="CV.pdf" class="btn btn-primary" role="button">CV</a>
+          <a href="cv.pdf" class="btn btn-primary" role="button">CV</a>
         </div>
 
         <h2 class="section-name">Research</h2>
 
-        <p>My main research interest is creating explainable AI tools for black-box machine learning models. Besides developing theory and algorithms for these methods, I also work on applying them to problems in biology and medicine.</p>
-
-        <p>Some of my recent projects include:</p>
+        <p>My main research interest is creating explainable AI tools for black-box machine learning models. In my work I try to design tools that are both theoretically grounded and computationally efficient. Some of my recent projects include:</p>
 
         <ul>
-          <li><strong>FastSHAP</strong>, a deep learning-based approach for generating Shapley value estimates in real-time <a href="https://arxiv.org/abs/2107.07436">[paper]</a> <a href="https://github.com/iancovert/fastshap">[code]</a></li>
+          <li><strong>FastSHAP</strong>, a deep learning-based approach for generating real-time Shapley value estimates <a href="https://arxiv.org/abs/2107.07436">[paper]</a> <a href="https://github.com/iancovert/fastshap">[code]</a></li>
+          <img src="images/fastshap.jpg" class="mx-auto project-photo">
+
           <li><strong>SAGE</strong>, a principled approach to calculating global feature importance using Shapley values <a href="https://arxiv.org/abs/2004.00668">[paper]</a> <a href="https://github.com/iancovert/sage">[code]</a> <a href="blog/understanding-shap-sage">[blog]</a></li>
-          <li><strong>Removal-based explanations</strong>, a new class of methods that unifies 25+ model explanation approaches (including SHAP, LIME, Meaningful Perturbations, L2X, etc.) <a href="https://jmlr.org/papers/v22/20-1316.html">[paper]</a> <a href="https://github.com/iancovert/removal-explanations">[code]</a></li>
-          <li><strong>Improving KernelSHAP</strong> by developing methods for accelerating the estimation process, automatically detecting its convergence, and providing confidence intervals for the results <a href="https://arxiv.org/abs/2012.01536">[paper]</a> <a href="https://github.com/iancovert/shapley-regression">[code]</a> <a href="blog/kernelshap">[blog]</a></li>
+          <img src="images/sage.jpg" class="mx-auto project-photo">
+
+          <li><strong>Removal-based explanations</strong>, a framework that unifies 26 model explanation approaches (including SHAP, LIME, Meaningful Perturbations, L2X, etc.) <a href="https://jmlr.org/papers/v22/20-1316.html">[paper]</a> <a href="https://github.com/iancovert/removal-explanations">[code]</a></li>
+          <img src="images/ebr.jpg" class="mx-auto project-photo">
+
+          <li><strong>Improving KernelSHAP</strong> by developing methods for accelerating its estimation, automatically detecting its convergence, and providing confidence intervals for the results <a href="https://arxiv.org/abs/2012.01536">[paper]</a> <a href="https://github.com/iancovert/shapley-regression">[code]</a> <a href="blog/kernelshap">[blog]</a></li>
+          <img src="images/kernelshap.jpg" style="max-width: 70%" class="mx-auto project-photo">
+
+          <li><strong>Temporal graph convolutional networks (TGCN)</strong>, a generalization of graph neural networks (GNNs) and convolutional neural networks (CNNs) for time series data <a href="http://proceedings.mlr.press/v106/covert19a/covert19a.pdf">[paper]</a> </li>
+          <img src="images/tgcn.jpg" class="mx-auto project-photo">
+
+          <li><strong>Neural Granger causality,</strong> a deep learning-based approach to discovering causal relationships in multivariate time series <a href="https://arxiv.org/abs/1802.05842">[paper]</a> <a href="https://github.com/iancovert/Neural-GC">[code]</a></li>
+          <img src="images/ngc.jpg" style="max-width: 70%" class="mx-auto project-photo">
         </ul>
       </div>
     </div>
