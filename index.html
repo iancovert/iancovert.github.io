@@ -33,6 +33,12 @@
       });
     });
   </script>
+  <script> 
+  $(function(){
+    $("#publicationsContent").load("publications/publications.html");
+    $("#workshopContent").load("publications/workshop.html"); 
+  });
+  </script>
   <style>
     body {
       font-family: "Roboto", sans-serif;
@@ -126,6 +132,8 @@
 
         <p>Previously, I worked with <a href="https://homes.cs.washington.edu/~ebfox/">Emily Fox</a> at UW and was a student researcher at Google Brain working with <a href="https://www.linkedin.com/in/jiening-zhan-1a6b9723">Jiening Zhan</a> and <a href="http://www.jackpo.org">Ming Jack Po</a>. Before that, I completed my Bachelor's program at Columbia University, where I did computational neuroscience research in <a href="http://www.stat.columbia.edu/~liam/">Liam Paninski</a>'s group.</p>
 
+        <p>My research interests touch on deep learning, explainable AI and representation learning, and I spent a couple years of my PhD working on making ML models more transparent. In particular, I've worked on fleshing out the theoretical foundations and connections among various interpretability methods, and tackling the computational challenges with Shapley values.</p>
+
         <div class="text-center">
           <!-- <a href="publications" class="btn btn-primary" role="button">Publications</a> -->
           <a href="blog" class="btn btn-primary" role="button">Blog</a>
@@ -137,135 +145,12 @@
         <p>My Google Scholar page is <a href="https://scholar.google.com/citations?user=Np8Ek3cAAAAJ&hl=en&oi=ao">here</a>.</p>
         <hr>
 
-        <!-- <p>
-          <a href="">Learning to Estimate Shapley Values with Vision Transformers</a> <a href=""><strong>[code]</strong></a>
-          <br>
-          <strong>Ian Covert*</strong>, Chanwoo Kim*, Su-In Lee
-          <br>
-          <em>Preprint</em>
-        </p> -->
-
-        <!-- <p>
-          <a href="">Algorithms to Estimate Shapley Value Feature Attributions</a> <a href=""><strong>[code]</strong></a>
-          <br>
-          Hugh Chen*, <strong>Ian Covert*</strong>, Scott Lundberg, Su-In Lee
-          <br>
-          <em>Preprint</em>
-        </p> -->
-
-        <p>
-          <a href="https://www.biorxiv.org/content/10.1101/2022.05.13.491738v1">PROPOSE: Predictive and Robust Probe Selection for Spatial Transcriptomics</a> <a href="https://github.com/iancovert/propose"><strong>[code]</strong></a>
-          <br>
-          <strong>Ian Covert</strong>, Rohan Gala, Tim Wang, Karel Svoboda, Uygar S&uuml;mb&uuml;l, Su-In Lee
-          <br>
-          <em>Preprint</em>
-        </p>
-
-        <p>
-          <a href="https://arxiv.org/abs/2107.07436">FastSHAP: Real-Time Shapley Value Estimation</a> <a href="https://github.com/iancovert/fastshap"><strong>[code]</strong></a> <a href="https://www.youtube.com/watch?v=Ye1XndwDlhI"><strong>[video]</strong></a>
-          <br>
-          Neil Jethani*, Mukund Sudarshan*, <strong>Ian Covert*</strong>, Su-In Lee, Rajesh Ranganath
-          <br>
-          <em>In the 10th International Conference on Learning Representations (ICLR 2022)</em>
-        </p>
-
-        <p>
-          <a href="https://jmlr.org/papers/v22/20-1316.html">Explaining by Removing: A Unified Framework for Model Explanation</a> <a href="https://github.com/iancovert/removal-explanations"><strong>[code]</strong></a> <a href="https://www.youtube.com/watch?v=9P4e2Rx-Y-I"><strong>[video]</strong></a>
-          <br>
-          <strong>Ian Covert</strong>, Scott Lundberg, Su-In Lee
-          <br>
-          <em>In the Journal of Machine Learning Research (JMLR 2021)</em>
-        </p>
-
-        <p>
-          <a href="https://arxiv.org/abs/2012.01536">Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression</a> <a href="https://github.com/iancovert/shapley-regression"><strong>[code]</strong></a> <a href="/blog/kernelshap"><strong>[blog]</strong></a>
-          <br>
-          <strong>Ian Covert</strong>, Su-In Lee
-          <br>
-          <em>In the 24th International Conference on Artificial Intelligence and Statistics (AISTATS 2021)</em>
-        </p>
-
-        <p>
-          <a href="https://arxiv.org/abs/1802.05842">Neural Granger Causality</a> <a href="https://github.com/iancovert/Neural-GC"><strong>[code]</strong></a>
-          <br>
-          Alex Tank*, <strong>Ian Covert*</strong>, Nicholas Foti, Ali Shojaie, Emily Fox
-          <br>
-          <em>In Transactions on Pattern Analysis and Machine Intelligence (TPAMI 2021)</em>
-        </p>
-
-        <p>
-          <a href="https://papers.nips.cc/paper/2020/file/c7bf0b7c1a86d5eb3be2c722cf2cf746-Paper.pdf">Understanding Global Feature Contributions With Additive Importance Measures</a> <a href="https://github.com/iancovert/sage/"><strong>[code]</strong></a> <a href="https://papertalk.org/papertalks/8404"><strong>[short video]</strong></a> <a href="/blog/understanding-shap-sage"><strong>[blog]</strong></a>
-          <br>
-          <strong>Ian Covert</strong>, Scott Lundberg, Su-In Lee
-          <br>
-          <em>In the 34th Conference on Neural Information Processing Systems (NeurIPS 2020)</em>
-        </p>
-
-        <p>
-          <a href="https://iancovert.com/publications/Deep_Unsupervised_2019.pdf">Deep Unsupervised Feature Selection</a> <a href="https://github.com/iancovert/Sparse-NN"><strong>[code]</strong></a>
-          <br>
-          <strong>Ian Covert</strong>, Uygar S&uuml;mb&uuml;l, Su-In Lee
-          <br>
-          <em>Preprint</em>
-        </p>
-
-        <p>
-          <a href="http://proceedings.mlr.press/v106/covert19a/covert19a.pdf">Temporal Graph Convolutional Networks for Automatic Seizure Detection</a>
-          <br>
-          <strong>Ian Covert</strong>, Balu Krishnan, Imad Njam, Jiening Zhan, Matthew Shore, John Hixson, Ming Jack Po
-          <br>
-          <em>In the 3rd Conference on Machine Learning for Healthcare (MLHC 2019)</em>
-        </p>
+        <div id="publicationsContent"></div>
 
         <h2 style="margin-top: 50px">Workshop papers</h2>
 
-        <p>
-          <a href="https://arxiv.org/abs/2106.06654">Disrupting Model Training With Adversarial Shortcuts</a>
-          <br>
-          Ivan Evtimov, <strong>Ian Covert</strong>, Aditya Kusupati, Tadayoshi Kohno
-          <br>
-          <em>In the Adversarial ML Workshop at ICML 2021</em>
-        </p>
+        <div id="workshopContent"></div>
 
-        <p>
-          <a href="https://arxiv.org/abs/2011.03623">Feature Removal Is a Unifying Principle for Model Explanation Methods</a>
-          <br>
-          <strong>Ian Covert</strong>, Scott Lundberg, Su-In Lee
-          <br>
-          <em>In the Machine Learning Retrospectives & Meta-Analyses (ML-RSA) Workshop at NeurIPS 2020</em>
-        </p>
-
-        <p>
-          <a href="https://iancovert.com/publications/Shapley_Feature_Utility_MLCB_2019.pdf">Shapley Feature Utility</a>
-          <br>
-          <strong>Ian Covert</strong>, Scott Lundberg, Su-In Lee
-          <br>
-          <em>In Machine Learning for Computational Biology (MLCB 2019)</em>
-        </p>
-
-        <p>
-          <a href="https://iancovert.com/publications/Principal_Genes_MLCB_2019.pdf">Principal Genes Selection</a>
-          <br>
-          <strong>Ian Covert</strong>, Uygar S&uuml;mb&uuml;l, Su-In Lee
-          <br>
-          <em>In Machine Learning for Computational Biology (MLCB 2019)</em>
-        </p>
-
-        <p>
-          <a href="javascript:;">EEG Seizure Detection via Deep Neural Networks: Application and Interpretation</a>
-          <br>
-          Jiening Zhan, Hector Yee, <strong>Ian Covert</strong>, Jiang Wu, Albee Ling, Matthew Shore, Eric Teasley, Rebecca Davies, Tiffany Kung, Justin Tansuwan, John Hixson and Ming Jack Po
-          <br>
-          <em>In the Machine Learning for Healthcare (ML4H) Workshop at NeurIPS 2019</em>
-        </p>
-
-        <p>
-          <a href="https://arxiv.org/abs/1711.08160">An Interpretable and Sparse Neural Network Model for Nonlinear Granger Causality Discovery</a>
-          <br>
-          Alex Tank, <strong>Ian Covert</strong>, Nicholas Foti, Ali Shojaie, Emily Fox
-          <br>
-          <em>In the Time Series Workshop (TSW) at NeurIPS 2017</em>
-        </p>
       </div>
     </div>
   </div>
