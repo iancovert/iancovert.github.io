@@ -131,7 +131,7 @@
 
         <p>Anyway, I was thinking about when we can more easily prove things about multi-task learning, and I wondered if there's a simpler version involving linear models. It turns out that there is, and it's called <em>reduced rank regression</em> [1, 2]. I'll introduce the problem here and then provide a derivation for optimal low-rank model, which fortunately has a closed-form solution.</p>
 
-        <h2>Multivariate regression</h2>
+        <h2>Background: multivariate regression</h2>
 
         <p>First, a quick clarification: <em>multiple regression</em> refers to problems with multiple input variables, and <em>multivariate regression</em> refers to problems with multiple response variables (see <a href="https://en.wikipedia.org/wiki/Linear_regression">Wikipedia</a>). Here, we're going to assume both multiple inputs and multiple responses, but I'll refer to it as multivariate regression.</p>
 
@@ -153,19 +153,19 @@
 
         <h2>Reduced rank regression</h2>
         
-        <p>In reduced rank regression (RRR), we aim to minimize the squared error <script type="math/tex">\mathcal{L}(C)</script> while constraining <script type="math/tex">C</script> to have rank lower than its maximum possible value, <script type="math/tex">\min(d, p)</script>. Note that in practice, we'll often have <script type="math/tex">n > d > p</script>. Given a value <script type="math/tex">r < \min(d, p)</script>, our problem becomes:</p>
+        <p>In reduced rank regression (RRR), we aim to minimize the squared error <script type="math/tex">\mathcal{L}(C)</script> while constraining <script type="math/tex">C</script> to have rank lower than its maximum possible value, <script type="math/tex">\min(d, p)</script>. Note that in practice we'll often have <script type="math/tex">n > d > p</script>. Given a value <script type="math/tex">r < \min(d, p)</script>, our problem becomes:</p>
         
         <script type="math/tex mode=display">\min_C \mathcal{L}(C) \ \ \text{s.t.} \ \ \text{rank}(C) = r.</script>
         
         <p>Deriving the solution isn't straightforward, so we'll break it down into a couple steps. At a high level, the derivation proceeds as follows:</p>
         
         <ol>
-            <li>Re-write the loss in terms of the OLS solution</li>
-            <li>Find a lower bound on the RRR loss by solving a low-rank matrix approximation</li>
+            <li>Re-write the RRR loss in terms of the OLS solution</li>
+            <li>Find a lower bound on the RRR loss by solving a low-rank matrix approximation problem</li>
             <li>Guess a solution to the RRR problem and show that it achieves the lower bound</li>
         </ol>
         
-        <p>First, we'll rewrite the RRR objective function using the OLS solution. Due to some standard properties about OLS residuals, we can write the following:</p>
+        <p>Let's jump in. First, we'll re-write the RRR objective function using the OLS solution. Due to some standard properties about OLS residuals, we can write the following:</p>
         
         <script type="math/tex mode=display">\mathcal{L}(C) = ||Y - XC||_F^2 = ||Y - X \hat{C}||_F^2 + ||X \hat{C} - XC||_F^2.</script>
         
@@ -184,7 +184,7 @@
 
                 <script type="math/tex mode=display">||Y - XB||_F^2 = ||Y - X\hat{B}||_F^2 + ||X \hat{B} - XB||_F^2 + 2 (Y - X\hat {B})^\top (X \hat{B} - XB)</script>
                 
-                <p>Let's focus on the third term, and let's split it into two pieces that we can analyze separately:</p>
+                <p>Let's focus on the third term and split it into two pieces that we can analyze separately:</p>
                 
                 <script type="math/tex mode=display">(Y - X\hat {B})^\top (X \hat{B} - XB) = (Y - X\hat {B})^\top X \hat{B} - (Y - X\hat {B})^\top XB</script>
                 
@@ -208,7 +208,7 @@
         
         <script type="math/tex mode=display">||\hat{Y} - XC||_F^2</script>
         
-        <p>Next, we'll find a lower bound on the above matrix norm. Consider our prediction matrix <script type="math/tex">XC \in \mathbb{R}^{n \times p}</script>, where we assume that <script type="math/tex">X</script> is full-rank, or <script type="math/tex">\text{rank}(X) = \min(n, d)</script>. In general, we can have <script type="math/tex">\text{rank}(XC)</script> as large as <script type="math/tex">\min(n, p)</script>, but due to our constraint <script type="math/tex">\text{rank}(C) = r</script>, we have <script type="math/tex">\text{rank}(XC) \leq r</script> (see the matrix product rank property <a href="https://en.wikipedia.org/wiki/Rank_(linear_algebra)#Properties">here</a>). In minimizing <script type="math/tex">||\hat{Y} - XC||_F^2</script>, we can therefore consider the related problem <script type="math/tex">||\hat{Y} - Z||_F^2</script> where <script type="math/tex">Z \in \mathbb{R}^{n \times p}</script> is low-rank.</p>
+        <p>Next, we'll find a lower bound on this matrix norm. Consider our prediction matrix <script type="math/tex">XC \in \mathbb{R}^{n \times p}</script>, where we assume that <script type="math/tex">X</script> is full-rank, or <script type="math/tex">\text{rank}(X) = \min(n, d)</script>. In general, we can have <script type="math/tex">\text{rank}(XC)</script> as large as <script type="math/tex">\min(n, p)</script>, but due to our constraint <script type="math/tex">\text{rank}(C) = r</script>, we have <script type="math/tex">\text{rank}(XC) \leq r</script> (see the matrix product rank property <a href="https://en.wikipedia.org/wiki/Rank_(linear_algebra)#Properties">here</a>). In minimizing <script type="math/tex">||\hat{Y} - XC||_F^2</script>, we can therefore consider the related problem <script type="math/tex">||\hat{Y} - Z||_F^2</script> where <script type="math/tex">Z \in \mathbb{R}^{n \times p}</script> is low-rank.</p>
         
         <p>Our new low-rank matrix approximation problem is the following:</p>
         
@@ -222,7 +222,7 @@
         
         <script type="math/tex mode=display">\hat{Y}_r = \sum_{i = 1}^r \sigma_i u_i v_i^\top.</script>
         
-        <p>According to the Eckart-Young-Mirsky theorem, this is the solution to the above, or</p>
+        <p>According to the Eckart-Young-Mirsky theorem, this is the solution to the problem above, or</p>
         
         <script type="math/tex mode=display">\hat{Y}_r = \arg \min_Z ||\hat{Y} - Z||_F^2 \ \ \text{s.t.} \ \ \text{rank}(Z) = r</script>
         
@@ -270,7 +270,7 @@
                 
                 <p>Thus, we have <script type="math/tex">\text{rank}(C^*) = \text{rank}(\hat{C} \sum_{i = 1}^r v_i v_i^\top) \leq \min(d, p, r) = r</script> (see matrix rank properties <a href="https://en.wikipedia.org/wiki/Rank_(linear_algebra)#Properties">here</a>).</p>
                     
-                <p>We can't guarantee <script type="math/tex">\text{rank}(C^*) = r</script> in general (consider the case with <script type="math/tex">Y = 0</script>), but the upper bound <script type="math/tex">\text{rank}(C^*) \leq r</script> should satisfy us because it shows we won't exceed the maximum allowable rank.</p>
+                <p>We can't guarantee <script type="math/tex">\text{rank}(C^*) = r</script> in general (consider the case with <script type="math/tex">Y = 0</script>, for example), but the upper bound <script type="math/tex">\text{rank}(C^*) \leq r</script> should satisfy us because it shows we won't exceed the maximum allowable rank.</p>
               </div>
             </div>
           </div>
@@ -299,11 +299,9 @@
           </div>
         </div>
         
-        <!-- <script type="math/tex mode=display">XC^* = X \hat{C} (\sum_{i = 1}^r v_i v_i^\top) = \hat{Y} (\sum_{i = 1}^r v_i v_i^\top) = (\sum_{i = 1}^\tau \sigma_i u_i v_i^\top) (\sum_{j = 1}^r v_j v_j^\top) = \sum_{i = 1}^r \sigma_i u_i v_i^\top = \hat{Y}_r</script> -->
-        
         <p>Thanks to the above, we have shown that <script type="math/tex">XC^*</script> is the optimal low-rank prediction matrix, or</p>
         
-        <script type="math/tex mode=display">||\hat{Y} - XC^*||_F^2 = ||\hat{Y} - \hat{Y}_r||_F^2.</script>
+        <script type="math/tex mode=display">||\hat{Y} - XC^*||_F^2 = ||\hat{Y} - \hat{Y}_r||_F^2 = \min_Z ||\hat{Y} - Z||_F^2 \ \ \text{s.t.} \ \ \text{rank}(Z) = r.</script>
         
         <p>This implies that <script type="math/tex">C^*</script> solves our original problem, or</p>
         
@@ -313,9 +311,9 @@
 
         <h2>Calculating the RRR solution</h2>
 
-        <p>To summarize, the derivation above shows that fitting a RRR model has two steps. We must first solve the unconstrained OLS problem, which gives us</p>
+        <p>To summarize, the derivation above shows that fitting a RRR model has three steps. We must first solve the unconstrained OLS problem, which gives us</p>
 
-        <script type="math/tex mode=display">\hat{C} = \arg \min_C \mathcal{L}(C) = (X^\top X)^{-1} X^T Y.</script>
+        <script type="math/tex mode=display">\hat{C} = (X^\top X)^{-1} X^T Y.</script>
 
         <p>Next, we must define the OLS predictions <script type="math/tex">\hat{Y} = X \hat{C}</script> and then find the SVD, or</p>
 
@@ -325,13 +323,13 @@
 
         <script type="math/tex mode=display">C^* = \hat{C} (\sum_{i = 1}^r v_i v_i^\top).</script>
 
-        <p>If you want to create a solution path using different rank values, you can re-use the OLS and SVD steps and simply calculate <script type="math/tex">\sum_{i = 1}^r v_i v_i^\top</script> then <script type="math/tex">C^* = \hat{C} (\sum_{i = 1}^r v_i v_i^\top)</script> for each rank <script type="math/tex">r</script> (which is very efficient).</p>
+        <p>If we want to create a solution path using different rank values, we can re-use the OLS and SVD steps and simply calculate <script type="math/tex">C^* = \hat{C} (\sum_{i = 1}^r v_i v_i^\top)</script> for each rank <script type="math/tex">r</script>, which is very efficient.</p>
 
         <h2>Relationship with PCA</h2>
 
         <p>Earlier this post, I mentioned that there were several approaches for training a multivariate regression model on linearly transformed predictors. Is that what's going on here? Not exactly, it turns out we're instead fitting the model with <em>linearly transformed labels</em>.</p>
         
-        <p>To see this, we can rewrite the RRR solution as follows:</p>
+        <p>To see this, we can re-write the RRR solution as follows:</p>
         
         <script type="math/tex mode=display">C^* = (X^\top X)^{-1} X^\top Y (\sum_{i = 1}^r v_i v_i^\top) = (X^\top X)^{-1} X^\top \tilde{Y}.</script>
         
