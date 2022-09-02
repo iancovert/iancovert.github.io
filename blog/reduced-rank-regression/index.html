@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-89623822-2"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-89623822-2"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'UA-89623822-2');
-  </script> -->
+  </script>
   <title>Reduced rank regression</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -238,8 +238,6 @@
             <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
               <div class="card-body">
                 <p>This result follows directly from the Eckart-Young-Mirsky theorem (see <a href="https://en.wikipedia.org/wiki/Low-rank_approximation#Basic_low-rank_approximation_problem">here</a>), which says that the optimal low-rank matrix approximation is given by setting all but the largest singular values to zero.</p>
-                    
-                <!-- <p>I thought about proving the theorem for the case with the Frobenius norm, but this too is on <a href="https://en.wikipedia.org/wiki/Low-rank_approximation#Proof_of_Eckart–Young–Mirsky_theorem_(for_Frobenius_norm)">Wikipedia</a>.</p> -->
               </div>
             </div>
           </div>
@@ -405,82 +403,6 @@
           <li>Gregory Reinsel and Raja Velu. "Multivariate Reduced Rank Regression: Theory and Applications." <em>Springer, 1998.</em></li>
           <li>Alan Izenman. "Modern Multivariate Statistical Techniques: Regression, Classification and Manifold Learning." <em>Springer, 2008.</em></li>
         </ol>
-        
-
-        <!-- <p>KernelSHAP is a popular implementation of SHAP, but it has several shortcomings that make it difficult to use in practice. In our recent <a href="https://arxiv.org/abs/2012.01536"> AISTATS paper</a> [1], we revisited the regression-based approach for estimating Shapley values to better understand and ultimately improve upon KernelSHAP.</p>
-
-        <p>Our goal was making Shapley value estimation more practical, and we did so by developing techniques for:</p>
-
-        <ol type="i">
-          <li>Providing uncertainty estimates</li>
-          <li>Detecting convergence automatically</li>
-          <li>Accelerating convergence</li>
-          <li>Generalizing KernelSHAP to other Shapley value-based explanation methods</li>
-        </ol> -->
-
-        <!-- <p>This post describes our paper at a high level, while avoiding some of the mathematical details.</p>
-
-        <h2>Background</h2>
-
-        <p>Table 1 summarizes these three related ideas.</p>
-
-        <table class="table table-sm table-bordered">
-          <caption>Table 1: Shapley values, SHAP and KernelSHAP.</caption>
-          <thead class="thead-light">
-            <tr>
-              <th></th>
-              <th class="align-middle text-center">What it means</th>
-              <th class="align-middle text-center">Introduced by</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="align-middle text-center">Shapley values</td>
-              <td class="align-middle text-center">Credit allocation method for cooperative games</td>
-              <td class="align-middle text-center">[2]</td>
-            </tr>
-            <tr>
-              <td class="align-middle text-center">SHAP</td>
-              <td class="align-middle text-center">Model explanation method (Shapley values of<br>a particular cooperative game)</td>
-              <td class="align-middle text-center">[3]</td>
-            </tr>
-            <tr>
-              <td class="align-middle text-center">KernelSHAP</td>
-              <td class="align-middle text-center">Approximation approach for SHAP values</td>
-              <td class="align-middle text-center">[3]</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <p>KernelSHAP has become the preferred method for model-agnostic SHAP value calculation [3], but recent work has exposed certain weaknesses in KernelSHAP. For example, Merrick and Taly [4] raised questions about whether KernelSHAP is an unbiased estimator (or a statistical estimator in any sense), and the SAGE paper [5] showed that sampling-based approximations permit convergence detection and uncertainty estimation, whereas KernelSHAP offers neither. These are some of the issues we address in our paper, "Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression" [1].</p>
-
-        <h2>KernelSHAP</h2>
-
-        <p>KernelSHAP approximates Shapley values by solving a linear regression problem. Thanks to the original SHAP paper [3], we know that the Shapley values for a cooperative game <script type="math/tex">v</script> are the solutions to the weighted least squares problem</p>
-
-        <script type="math/tex mode=display">\min_{\phi_0, \ldots, \phi_d} \sum_{S \subseteq D} \mu_{\text{Sh}}(S) \Big( \phi_0 + \sum_{i \in S} \phi_i - v(S) \Big)^2</script>
-
-        <ul>
-          <li>KernelSHAP is a consistent Shapley value estimator.</li>
-          <li>KernelSHAP has negligible bias.</li>
-          <li>KernelSHAP has significantly lower variance than our newly proposed <em>unbiased KernelSHAP</em> estimator. The new estimator has the advantage of being provably unbiased, but the original approach appears to make a more favorable bias-variance trade-off (see Figure 1).</li>
-          <li>KernelSHAP's variance evolves at a rate of <script type="math/tex">\mathcal{O}(\frac{1}{n})</script> with the number of sampled data points, identical to the unbiased KernelSHAP estimator.</li>
-        </ul>
-
-        <figure class="figure text-center">
-          <img src="images/examples.jpg" class="figure-img img-fluid">
-          <figcaption class="figure-caption text-left">Figure 2: Shapley value-based explanations with 95% uncertainty estimates. Left: SHAP values for a single prediction with the census income dataset. Right: SAGE values for the German credit dataset.</figcaption>
-        </figure>
-
-        <h2>Conclusion</h2>
-
-        <p>Blah blah blah.</p>
-
-        <h2>References</h2>
-
-        <ol>
-          <li>Ian Covert, Su-In Lee. "Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression." <em>Artificial Intelligence and Statistics, 2021.</em></li>
-        </ol> -->
 
         <!-- Disqus -->
         <div id="disqus_thread"></div>
