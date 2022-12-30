@@ -13,6 +13,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -36,7 +37,7 @@
   <script> 
   $(function(){
     $("#publicationsContent").load("publications/publications.html");
-    $("#workshopContent").load("publications/workshop.html"); 
+    $("#workshopContent").load("publications/workshop.html");
   });
   </script>
   <style>
@@ -64,8 +65,7 @@
       margin-bottom: 100px;
     }
     #Headshot {
-      height: 250px;
-      border-radius: 7px;
+      width: 100%;
     }
     #Icons a, #Name a {
       display: inline-block;
@@ -77,8 +77,11 @@
       color: #555555;
       text-decoration: none;
     }
+    #Title {
+      max-width: 800px;
+    }
     #Description {
-      max-width: 680px;
+      max-width: 800px;
       padding-right: 15px;
       padding-left: 15px;
     }
@@ -110,50 +113,258 @@
 <body>
 
   <div class="container" id="Header">
-    <div class="row top-spacing">
-      <img src="images/headshot2.jpg" class="mx-auto" id="Headshot">
-    </div>
-    <div id="Name" class="row top-spacing">
-      <a href="/" class="mx-auto"><h1 class="display-4">Ian C. Covert</h1></a>
-    </div>
 
-    <div class="row top-spacing text-center" id="Icons">
-      <div class="mx-auto">
-        <a href="mailto:icovert@cs.washington.edu"><i class="fa fa-paper-plane fa-2x"></i></a>
-        <a href="https://github.com/iancovert"><i class="fa fa-github fa-2x"></i></a>
-        <a href="https://www.linkedin.com/in/ian-covert"><i class="fa fa-linkedin fa-2x"></i></a>
-        <a href="https://scholar.google.com/citations?user=Np8Ek3cAAAAJ"><i class="fa fa-graduation-cap fa-2x"></i></a>
-      </div>
+    <div class="row top-spacing mx-auto" id="Title">
+        <div class="col-sm-4">
+            <img src="images/headshot1.jpg" class="" id="Headshot">
+        </div>
+        <div class="col-sm-8 d-flex align-items-center">
+            <div>
+                <h1 class="">Ian Covert</h1>
+                <p>
+                    Ph.D. Student in Computer Science
+                    <br>
+                    <a href="https://www.cs.washington.edu/">Paul G. Allen School of Computer Science & Engineering</a>
+                    <br>
+                    <a href="https://www.washington.edu/">University of Washington</a>
+                </p>
+                <p>icovert@cs.washington.edu</p>
+                <p>
+                    <a href="cv.pdf">cv</a> |
+                    <a href="blog">blog</a> |
+                    <a href="https://github.com/iancovert">github</a> |
+                    <a href="https://scholar.google.com/citations?user=Np8Ek3cAAAAJ">google scholar</a>
+                </p>
+            </div>
+        </div>
     </div>
 
     <div class="row top-spacing">
       <div class="mx-auto" id="Description">
         <p class="text-danger"><strong>I'm currently on the job market for positions starting in 2023!</strong></p>
 
-        <p>I'm a Ph.D. student in Computer Science at the University of Washington, where I'm fortunate to be advised by <a href="https://suinlee.cs.washington.edu/su-in-lee">Su-In Lee</a>. My research focuses on the theoretical foundations of trustworthy AI/ML: I'm interested in making ML models more transparent, establishing foundations in information theory and game theory, and developing efficient algorithms for large-scale models. I'm also interested in leveraging these ideas to improve how models are trained.</p>
+        <p>
+            I'm a Ph.D. student in Computer Science at the University of
+            Washington, where I'm advised by
+            <a href="https://suinlee.cs.washington.edu/su-in-lee">Su-In Lee</a>.
+            <!-- My research focuses on the theoretical foundations of trustworthy
+            AI/ML: I'm interested in making ML models more transparent,
+            establishing foundations in information theory and game theory, and
+            developing efficient algorithms for large-scale models. I'm also
+            interested in leveraging these ideas to improve how models are
+            trained. -->
+        </p>
             
-        <p>Previously, I worked with <a href="https://homes.cs.washington.edu/~ebfox/">Emily Fox</a> at UW and was a student researcher at Google Brain working with <a href="https://www.linkedin.com/in/jiening-zhan-1a6b9723">Jiening Zhan</a> and <a href="https://www.linkedin.com/in/jackpo">Ming Jack Po</a>. I also interned as a quant researcher at <a href="https://www.citadelsecurities.com">Citadel Securities</a> and <a href="https://www.goldmansachs.com">Goldman Sachs</a>. Before that, I completed my Bachelor's degree at Columbia University, where I did computational neuroscience research in <a href="http://www.stat.columbia.edu/~liam/">Liam Paninski</a>'s lab.</p>
+        <p>
+            Previously, I worked with
+            <a href="https://homes.cs.washington.edu/~ebfox/">Emily Fox</a> at
+            UW and was a student researcher at Google Brain working with
+            <a href="https://www.linkedin.com/in/jiening-zhan-1a6b9723">Jiening Zhan</a>
+            and
+            <a href="https://www.linkedin.com/in/jackpo">Ming Jack Po</a>.
+            I also interned as a quantitative researcher at
+            <a href="https://www.citadelsecurities.com">Citadel Securities</a>
+            and
+            <a href="https://www.goldmansachs.com">Goldman Sachs</a>.
+            Before that, I completed my Bachelor's degree at Columbia
+            University, where I did computational neuroscience research in
+            <a href="http://www.stat.columbia.edu/~liam/">Liam Paninski</a>'s
+            lab.
+        </p>
 
         <hr>
 
         <p>I co-taught an explainable AI course with my advisor in Spring 2022. The course materials are available <a href="http://courses.cs.washington.edu/courses/csep590b/22sp/">here</a>.</p>
 
-        <div class="text-center">
-          <!-- <a href="publications" class="btn btn-primary" role="button">Publications</a> -->
-          <a href="blog" class="btn btn-primary" role="button">Blog</a>
-          <a href="cv.pdf" class="btn btn-primary" role="button">CV</a>
+        <h2 class="section-name">Research focus</h2>
+
+        <div class="row mx-auto">
+            <p>Hello world</p>
         </div>
 
-        <h2 class="section-name">Research</h2>
+        <h2 class="section-name">Publications and preprints</h2>
 
-        <p>My Google Scholar page is <a href="https://scholar.google.com/citations?user=Np8Ek3cAAAAJ&hl=en&oi=ao">here</a>.</p>
-        <hr>
+        <!-- <div id="publicationsContent"></div> -->
 
-        <div id="publicationsContent"></div>
+        <p>
+            <strong>Learning to Estimate Shapley Values with Vision Transformers</strong>
+            <br>
+            <strong>Ian Covert*</strong>, Chanwoo Kim*, Su-In Lee
+            <br>
+            <em>Preprint, 2022</em>
+            <br>
+            <a href="https://arxiv.org/abs/2206.05282">[paper]</a> <a href="https://github.com/suinleelab/vit-shapley">[code]</a>
+        </p>
+          
+        <p>
+            <strong>Algorithms to Estimate Shapley Value Feature Attributions</strong>
+            <br>
+            Hugh Chen*, <strong>Ian Covert*</strong>, Scott Lundberg, Su-In Lee
+            <br>
+            <em>Preprint, 2022</em>
+            <br>
+            <a href="https://arxiv.org/abs/2207.07605">[paper]</a> <a href="https://github.com/suinleelab/shapley_algorithms">[code]</a>
+        </p>
+          
+        <p>
+            <strong>Predictive and Robust Gene Selection for Spatial Transcriptomics</strong>
+            <br>
+            <strong>Ian Covert</strong>, Rohan Gala, Tim Wang, Karel Svoboda, Uygar S&uuml;mb&uuml;l, Su-In Lee
+            <br>
+            <em>Preprint, 2022</em>
+            <br>
+            <a href="https://www.biorxiv.org/content/10.1101/2022.05.13.491738v2">[paper]</a> <a href="https://github.com/iancovert/persist">[code]</a>
+        </p>
+        
+        <p>
+            <strong>FastSHAP: Real-Time Shapley Value Estimation</strong>
+            <br>
+            Neil Jethani*, Mukund Sudarshan*, <strong>Ian Covert*</strong>, Su-In Lee, Rajesh Ranganath
+            <br>
+            <em>International Conference on Learning Representations (ICLR), 2022</em>
+            <br>
+            <a href="https://arxiv.org/abs/2107.07436">[paper]</a> <a href="https://github.com/iancovert/fastshap">[code]</a> <a href="https://www.youtube.com/watch?v=Ye1XndwDlhI">[video]</a>
+        </p>
+          
+        <p>
+            <strong>Explaining by Removing: A Unified Framework for Model Explanation</strong>
+            <br>
+            <strong>Ian Covert</strong>, Scott Lundberg, Su-In Lee
+            <br>
+            <em>Journal of Machine Learning Research (JMLR), 2021</em>
+            <br>
+            <a href="https://jmlr.org/papers/v22/20-1316.html">[paper]</a> <a href="https://github.com/iancovert/removal-explanations">[code]</a> <a href="https://www.youtube.com/watch?v=9P4e2Rx-Y-I">[video]</a>
+        </p>
+          
+        <p>
+            <strong>Improving KernelSHAP: Practical Shapley Value Estimation via Linear Regression</strong>
+            <br>
+            <strong>Ian Covert</strong>, Su-In Lee
+            <br>
+            <em>International Conference on Artificial Intelligence and Statistics (AISTATS), 2021</em>
+            <br>
+            <a href="https://arxiv.org/abs/2012.01536">[paper]</a> <a href="https://github.com/iancovert/shapley-regression">[code]</a> <a href="/blog/kernelshap">[blog]</a>
+        </p>
+          
+        <p>
+            <strong>Neural Granger Causality</strong>
+            <br>
+            Alex Tank*, <strong>Ian Covert*</strong>, Nicholas Foti, Ali Shojaie, Emily Fox
+            <br>
+            <em>Transactions on Pattern Analysis and Machine Intelligence (TPAMI), 2021</em>
+            <br>
+            <a href="https://arxiv.org/abs/1802.05842">[paper]</a> <a href="https://github.com/iancovert/Neural-GC">[code]</a>
+        </p>
+          
+        <p>
+            <strong>Understanding Global Feature Contributions With Additive Importance Measures</strong>
+            <br>
+            <strong>Ian Covert</strong>, Scott Lundberg, Su-In Lee
+            <br>
+            <em>Neural Information Processing Systems (NeurIPS), 2020</em>
+            <br>
+            <a href="https://papers.nips.cc/paper/2020/file/c7bf0b7c1a86d5eb3be2c722cf2cf746-Paper.pdf">[paper]</a> <a href="https://github.com/iancovert/sage/">[code]</a> <a href="https://papertalk.org/papertalks/8404">[video]</a> <a href="/blog/understanding-shap-sage">[blog]</a>
+        </p>
+          
+        <p>
+            <strong>Deep Unsupervised Feature Selection</strong>
+            <br>
+            <strong>Ian Covert</strong>, Uygar S&uuml;mb&uuml;l, Su-In Lee
+            <br>
+            <em>Preprint, 2019</em>
+            <br>
+            <a href="https://iancovert.com/publications/Deep_Unsupervised_2019.pdf">[paper]</a> <a href="https://github.com/iancovert/Sparse-NN">[code]</a>
+        </p>
+          
+        <p>
+            <strong>Temporal Graph Convolutional Networks for Automatic Seizure Detection</strong>
+            <br>
+            <strong>Ian Covert</strong>, Balu Krishnan, Imad Njam, Jiening Zhan, Matthew Shore, John Hixson, Ming Jack Po
+            <br>
+            <em>Machine Learning for Healthcare (MLHC), 2019</em>
+            <br>
+            <a href="http://proceedings.mlr.press/v106/covert19a/covert19a.pdf">[paper]</a>
+        </p>
 
         <h2 style="margin-top: 50px">Workshop papers</h2>
 
-        <div id="workshopContent"></div>
+        <!-- <div id="workshopContent"></div> -->
+
+        <p>
+            <strong>Disrupting Model Training With Adversarial Shortcuts</strong>
+            <br>
+            Ivan Evtimov, <strong>Ian Covert</strong>, Aditya Kusupati, Tadayoshi Kohno
+            <br>
+            <em>Adversarial ML Workshop, ICML 2021</em>
+            <br>
+            <a href="https://arxiv.org/abs/2106.06654">[paper]</a>
+        </p>
+        
+        <p>
+            <strong>Feature Removal Is a Unifying Principle for Model Explanation Methods</strong>
+            <br>
+            <strong>Ian Covert</strong>, Scott Lundberg, Su-In Lee
+            <br>
+            <em>Machine Learning Retrospectives & Meta-Analyses (ML-RSA) Workshop, NeurIPS 2020</em>
+            <br>
+            <a href="https://arxiv.org/abs/2011.03623">[paper]</a> <a href="https://github.com/iancovert/removal-explanations">[code]</a>
+        </p>
+        
+        <p>
+            <strong>Shapley Feature Utility</strong>
+            <br>
+            <strong>Ian Covert</strong>, Scott Lundberg, Su-In Lee
+            <br>
+            <em>Machine Learning for Computational Biology (MLCB), 2019</em>
+            <br>
+            <a href="https://iancovert.com/publications/Shapley_Feature_Utility_MLCB_2019.pdf">[paper]</a>
+        </p>
+        
+        <p>
+            <strong>Principal Genes Selection</strong>
+            <br>
+            <strong>Ian Covert</strong>, Uygar S&uuml;mb&uuml;l, Su-In Lee
+            <br>
+            <em>Machine Learning for Computational Biology (MLCB), 2019</em>
+            <br>
+            <a href="https://iancovert.com/publications/Principal_Genes_MLCB_2019.pdf">[paper]</a>
+        </p>
+        
+        <p>
+            <strong>EEG Seizure Detection via Deep Neural Networks: Application and Interpretation</strong>
+            <br>
+            Jiening Zhan, Hector Yee, <strong>Ian Covert</strong>, Jiang Wu, Albee Ling, Matthew Shore, Eric Teasley, Rebecca Davies, Tiffany Kung, Justin Tansuwan, John Hixson and Ming Jack Po
+            <br>
+            <em>Machine Learning for Healthcare Workshop (ML4H), NeurIPS 2019</em>
+            <br>
+            <a href="javascript:;">[paper]</a>
+        </p>
+        
+        <p>
+            <strong>An Interpretable and Sparse Neural Network Model for Nonlinear Granger Causality Discovery</strong>
+            <br>
+            Alex Tank, <strong>Ian Covert</strong>, Nicholas Foti, Ali Shojaie, Emily Fox
+            <br>
+            <em>Time Series Workshop (TSW), NeurIPS 2017</em>
+            <br>
+            <a href="https://arxiv.org/abs/1711.08160">[paper]</a>
+        </p>
+
+        <h2 style="margin-top: 50px; margin-bottom: 20px">Teaching</h2>
+
+        <div class="row mx-auto">
+            <p><b>Spring 2022:</b> Co-instructor for <a href="http://courses.cs.washington.edu/courses/csep590b/22sp/">CSEP 590B: Explainable AI</a> at University of Washington</p>
+            
+            <p><b>Winter 2019:</b> Teaching Assistant for <a href="">EE 578: Convex Optimization</a> at University of Washington</p>
+        </div>
+
+        <h2 style="margin-top: 20px; margin-bottom: 20px">Academic service</h2>
+
+        <div class="row mx-auto">
+            <p><b>Conference reviewing:</b> NeurIPS (2018-2022), ICLR (2021-2023), ICML (2020-2022), AISTATS (2021-2023), MLHC (2020-2022)</p>
+
+            <p><b>Journal reviewing:</b> Patterns (Cell), Machine Learning (Springer), Artifical Intelligence (Elsevier)</p>
+        </div>
 
       </div>
     </div>
